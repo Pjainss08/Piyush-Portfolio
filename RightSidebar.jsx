@@ -32,17 +32,10 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange 
           width: 32,
           height: 32,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #0d99ff, #a259ff)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 12,
-          fontWeight: 700,
-          color: '#fff',
           flexShrink: 0,
           overflow: 'hidden',
         }}>
-          PJ
+          <img src="/pj-avatar.jpeg" alt="PJ" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
 
         {/* Share button */}

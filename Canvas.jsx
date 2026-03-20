@@ -116,47 +116,132 @@ function CanvasShapeItem({ item, isSelected, onSelect }) {
   );
 }
 
-function CanvasCommentItem({ item, onUpdate }) {
+function CanvasCommentItem({ item, onUpdate, onDelete }) {
   const [expanded, setExpanded] = useState(true);
-  const [text, setText] = useState(item.text);
+  const [editing, setEditing] = useState(!item.text);
+  const [draft, setDraft] = useState(item.text || '');
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (expanded && !item.text && inputRef.current) inputRef.current.focus();
-  }, [expanded, item.text]);
+    if (editing && inputRef.current) inputRef.current.focus();
+  }, [editing]);
+
+  const handleSubmit = () => {
+    if (draft.trim()) {
+      onUpdate(item.id, { text: draft.trim() });
+      setEditing(false);
+    }
+  };
+
+  const saved = item.text && !editing;
 
   return (
     <div data-card style={{ position: 'absolute', left: item.x, top: item.y, zIndex: 10 }}>
-      <div
-        onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
-        style={{
-          width: 28, height: 28, borderRadius: '50%', background: '#0d99ff',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 11, fontWeight: 700, color: '#fff', cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-        }}
-      >
-        {item.author || 'PJ'}
-      </div>
+      {/* Pin icon — only show when comment is saved and collapsed */}
+      {!expanded && (
+        <div
+          onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
+          style={{
+            width: 36, height: 36, borderRadius: '50%', background: '#0d99ff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 13, fontWeight: 700, color: '#fff', cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+          }}
+        >
+          PJ
+        </div>
+      )}
       {expanded && (
-        <div style={{
-          position: 'absolute', top: 32, left: 0, background: '#fff', borderRadius: 8,
-          padding: 10, minWidth: 180, boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-          border: '1px solid #e5e5e5',
+        <div data-no-pan style={{
+          background: '#fff', borderRadius: 12, minWidth: 260,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.18)', overflow: 'hidden',
         }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#333', marginBottom: 4 }}>{item.author || 'PJ'}</div>
-          <textarea
-            ref={inputRef}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onBlur={() => onUpdate(item.id, { text })}
-            placeholder="Add a comment..."
-            style={{
-              width: '100%', minHeight: 40, background: '#f5f5f5', border: '1px solid #e5e5e5',
-              borderRadius: 4, color: '#333', fontSize: 12, fontFamily: 'Inter, sans-serif',
-              padding: 6, outline: 'none', resize: 'vertical',
-            }}
-          />
+          {saved ? (
+            /* Saved comment view */
+            <div style={{ padding: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <div style={{
+                  width: 32, height: 32, borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
+                }}>
+                  <img src="/pj-avatar.jpeg" alt="PJ" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>Piyush Jain</span>
+                  <span style={{ fontSize: 11, color: '#aaa', marginLeft: 8 }}>just now</span>
+                </div>
+                <div
+                  onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
+                  style={{
+                    width: 22, height: 22, borderRadius: 4, display: 'flex',
+                    alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                    color: '#999', fontSize: 16, lineHeight: 1,
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#fee'; e.currentTarget.style.color = '#e74c3c'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#999'; }}
+                  title="Delete comment"
+                >
+                  ×
+                </div>
+              </div>
+              <div style={{ fontSize: 14, color: '#333', lineHeight: 1.5, paddingLeft: 42 }}>
+                {item.text}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 10 }}>
+                <div
+                  onClick={(e) => { e.stopPropagation(); setEditing(true); setDraft(item.text); }}
+                  style={{ fontSize: 11, color: '#0d99ff', cursor: 'pointer' }}
+                >
+                  Edit
+                </div>
+                <div
+                  onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
+                  style={{ fontSize: 11, color: '#999', cursor: 'pointer' }}
+                >
+                  Minimize
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Editing view */
+            <div style={{ padding: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
+                    <img src="/pj-avatar.jpeg" alt="PJ" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>PJ</div>
+                </div>
+                <div
+                  onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
+                  style={{
+                    width: 22, height: 22, borderRadius: 4, display: 'flex',
+                    alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                    color: '#999', fontSize: 16, lineHeight: 1,
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#fee'; e.currentTarget.style.color = '#e74c3c'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#999'; }}
+                  title="Delete comment"
+                >
+                  ×
+                </div>
+              </div>
+              <textarea
+                ref={inputRef}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
+                placeholder="Add a comment..."
+                style={{
+                  width: '100%', minHeight: 60, background: '#f5f5f5', border: '1px solid #e5e5e5',
+                  borderRadius: 6, color: '#333', fontSize: 13, fontFamily: 'Inter, sans-serif',
+                  padding: 8, outline: 'none', resize: 'vertical', lineHeight: 1.4,
+                }}
+              />
+              <div style={{ fontSize: 10, color: '#aaa', marginTop: 6, textAlign: 'right' }}>
+                Press Enter to save
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -369,7 +454,7 @@ export default function Canvas({
         {canvasItems.map(item => {
           if (item.type === 'text') return <CanvasTextItem key={item.id} item={item} onUpdate={updateItem} onDelete={deleteItem} />;
           if (item.type === 'shape') return <CanvasShapeItem key={item.id} item={item} isSelected={selectedItem === item.id} onSelect={(id) => { setSelectedItem(id); onSelectCard(null); }} />;
-          if (item.type === 'comment') return <CanvasCommentItem key={item.id} item={item} onUpdate={updateItem} />;
+          if (item.type === 'comment') return <CanvasCommentItem key={item.id} item={item} onUpdate={updateItem} onDelete={deleteItem} />;
           return null;
         })}
 
