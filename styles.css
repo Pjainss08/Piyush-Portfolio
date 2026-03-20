@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --figma-bg: #1e1e1e;
-  --figma-surface: #2c2c2c;
-  --figma-surface-hover: #363636;
-  --figma-border: #3d3d3d;
-  --figma-text: #ffffff;
-  --figma-text-secondary: #999999;
-  --figma-text-tertiary: #666666;
+  --figma-bg: #f5f5f5;
+  --figma-surface: #ffffff;
+  --figma-surface-hover: #f0f0f0;
+  --figma-border: #e0e0e0;
+  --figma-text: #1e1e1e;
+  --figma-text-secondary: #666666;
+  --figma-text-tertiary: #999999;
   --figma-blue: #0d99ff;
-  --figma-blue-bg: rgba(13, 153, 255, 0.15);
+  --figma-blue-bg: rgba(13, 153, 255, 0.1);
   --figma-canvas: #f5f5f5;
   --figma-dot: #e0e0e0;
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -59,7 +59,7 @@ html, body, #root {
 
 .sidebar::-webkit-scrollbar { width: 6px; }
 .sidebar::-webkit-scrollbar-track { background: transparent; }
-.sidebar::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
 
 .section-header {
   color: var(--figma-text-secondary);

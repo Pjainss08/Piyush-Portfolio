@@ -66,11 +66,11 @@ export default function BottomToolbar({ activeTool, shapeType, onToolChange, onS
       display: 'flex',
       alignItems: 'center',
       gap: 2,
-      background: '#2c2c2c',
+      background: '#ffffff',
       borderRadius: 10,
       padding: '6px 8px',
-      boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
-      border: '1px solid #3d3d3d',
+      boxShadow: '0 2px 16px rgba(0,0,0,0.1)',
+      border: '1px solid #e0e0e0',
     }}>
       {/* Move */}
       <ToolBtn active={activeTool === 'move'} label="Move" onClick={() => onToolChange('move')}>
@@ -97,7 +97,7 @@ export default function BottomToolbar({ activeTool, shapeType, onToolChange, onS
             width: 0, height: 0,
             borderLeft: '3px solid transparent',
             borderRight: '3px solid transparent',
-            borderTop: `3px solid ${activeTool === 'shape' ? '#fff' : '#666'}`,
+            borderTop: `3px solid ${activeTool === 'shape' ? '#fff' : '#999'}`,
           }} />
         </ToolBtn>
 
@@ -115,8 +115,8 @@ export default function BottomToolbar({ activeTool, shapeType, onToolChange, onS
         {showShapeMenu && (
           <div data-no-pan style={{
             position: 'absolute', bottom: 48, left: '50%', transform: 'translateX(-50%)',
-            background: '#2c2c2c', border: '1px solid #3d3d3d', borderRadius: 8,
-            padding: 4, minWidth: 140, boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+            background: '#ffffff', border: '1px solid #e0e0e0', borderRadius: 8,
+            padding: 4, minWidth: 140, boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
           }}>
             {SHAPE_OPTIONS.map(opt => (
               <div
@@ -130,8 +130,8 @@ export default function BottomToolbar({ activeTool, shapeType, onToolChange, onS
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8,
                   padding: '6px 10px', borderRadius: 4, cursor: 'pointer',
-                  color: shapeType === opt.id ? '#fff' : '#999',
-                  background: shapeType === opt.id ? 'rgba(13,153,255,0.2)' : 'transparent',
+                  color: shapeType === opt.id ? '#fff' : '#666',
+                  background: shapeType === opt.id ? '#0d99ff' : 'transparent',
                   fontSize: 12, transition: 'all 0.1s',
                 }}
               >
@@ -162,7 +162,7 @@ function ToolBtn({ children, active, label, onClick, onContextMenu }) {
         width: 36, height: 36, position: 'relative',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         borderRadius: 8, cursor: 'pointer',
-        color: active ? '#fff' : '#999',
+        color: active ? '#fff' : '#666',
         background: active ? '#0d99ff' : 'transparent',
         transition: 'all 0.15s',
       }}

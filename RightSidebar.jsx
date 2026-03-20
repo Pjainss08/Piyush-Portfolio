@@ -65,7 +65,7 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange 
           padding: '8px 12px',
           fontSize: 11,
           fontWeight: 500,
-          color: '#fff',
+          color: 'var(--figma-text)',
           borderBottom: '2px solid var(--figma-blue)',
         }}>
           Design
@@ -97,11 +97,11 @@ function PageProperties({ canvasBg = '#F2F2F2', onCanvasBgChange = () => {} }) {
           border: '1px solid var(--figma-border)',
           flexShrink: 0,
         }} />
-        <span style={{ color: '#fff', fontSize: 11 }}>{canvasBg.replace('#', '').toUpperCase()}</span>
-        <span style={{ color: '#999', fontSize: 11, marginLeft: 'auto' }}>100 %</span>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+        <span style={{ color: 'var(--figma-text)', fontSize: 11 }}>{canvasBg.replace('#', '').toUpperCase()}</span>
+        <span style={{ color: 'var(--figma-text-tertiary)', fontSize: 11, marginLeft: 'auto' }}>100 %</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--figma-text-tertiary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
           <circle cx="12" cy="12" r="9" />
-          <circle cx="12" cy="12" r="3" fill="#666" />
+          <circle cx="12" cy="12" r="3" fill="var(--figma-text-tertiary)" />
         </svg>
       </div>
       {showPicker && (
@@ -155,10 +155,10 @@ function PageProperties({ canvasBg = '#F2F2F2', onCanvasBgChange = () => {} }) {
                 setTimeout(() => setEmailCopied(false), 2000);
               }}
             >
-              <span style={{ color: emailCopied ? '#0ACF83' : '#fff', fontSize: 14, transition: 'color 0.2s' }}>
+              <span style={{ color: emailCopied ? '#0ACF83' : 'var(--figma-text)', fontSize: 14, transition: 'color 0.2s' }}>
                 {emailCopied ? 'Email Copied' : link.label}
               </span>
-              <span style={{ color: '#666', display: 'flex' }}>
+              <span style={{ color: 'var(--figma-text-tertiary)', display: 'flex' }}>
                 <ArrowUpRight size={14} />
               </span>
             </div>
@@ -175,8 +175,8 @@ function PageProperties({ canvasBg = '#F2F2F2', onCanvasBgChange = () => {} }) {
             style={{ textDecoration: 'none' }}
           >
             <div className="prop-row" style={{ justifyContent: 'space-between', cursor: 'pointer' }}>
-              <span style={{ color: '#fff', fontSize: 14 }}>{link.label}</span>
-              <span style={{ color: '#666', display: 'flex' }}>
+              <span style={{ color: 'var(--figma-text)', fontSize: 14 }}>{link.label}</span>
+              <span style={{ color: 'var(--figma-text-tertiary)', display: 'flex' }}>
                 <ArrowUpRight size={14} />
               </span>
             </div>
@@ -193,11 +193,11 @@ function PageProperties({ canvasBg = '#F2F2F2', onCanvasBgChange = () => {} }) {
 function CardProperties({ card }) {
   return (
     <>
-      <div style={{ padding: '12px', fontSize: 15, fontWeight: 600, color: '#fff' }}>
+      <div style={{ padding: '12px', fontSize: 15, fontWeight: 600, color: 'var(--figma-text)' }}>
         {card.title}
       </div>
       <div style={{ height: 1, background: 'var(--figma-border)' }} />
-      <div style={{ padding: '10px 12px', fontSize: 12, color: '#ccc', lineHeight: 1.5 }}>
+      <div style={{ padding: '10px 12px', fontSize: 12, color: 'var(--figma-text-secondary)', lineHeight: 1.5 }}>
         {card.description}
       </div>
     </>

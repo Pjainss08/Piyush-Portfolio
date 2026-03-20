@@ -77,10 +77,10 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
       <div style={{ padding: '12px 12px 10px 12px', borderBottom: '1px solid var(--figma-border)' }}>
         <div style={{ marginBottom: 2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>PJ Portfolio Website</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--figma-text)' }}>PJ Portfolio Website</span>
             {icons.chevronDown(12)}
           </div>
-          <span style={{ fontSize: 11, color: '#666', marginTop: 2, display: 'block' }}>Work Projects</span>
+          <span style={{ fontSize: 11, color: 'var(--figma-text-secondary)', marginTop: 2, display: 'block' }}>Work Projects</span>
         </div>
       </div>
 
@@ -95,7 +95,7 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
           padding: '8px 12px',
           fontSize: 11,
           fontWeight: 500,
-          color: '#fff',
+          color: 'var(--figma-text)',
           borderBottom: '2px solid var(--figma-blue)',
           cursor: 'pointer',
         }}>
@@ -103,7 +103,7 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
         </div>
         <div style={{ flex: 1 }} />
         <div
-          style={{ color: searchOpen ? '#fff' : '#999', cursor: 'pointer' }}
+          style={{ color: searchOpen ? 'var(--figma-text)' : 'var(--figma-text-tertiary)', cursor: 'pointer' }}
           onClick={() => { setSearchOpen(!searchOpen); if (searchOpen) setSearchQuery(''); }}
         >
           {icons.search}
@@ -121,10 +121,10 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
             placeholder="Search layers..."
             style={{
               width: '100%',
-              background: 'var(--figma-bg)',
+              background: 'var(--figma-surface-hover)',
               border: '1px solid var(--figma-border)',
               borderRadius: 4,
-              color: '#fff',
+              color: 'var(--figma-text)',
               fontSize: 12,
               padding: '6px 8px',
               fontFamily: 'Inter, sans-serif',
@@ -163,7 +163,7 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
         >
           <span>Layers</span>
           <span style={{
-            color: '#999',
+            color: 'var(--figma-text-tertiary)',
             transform: layersOpen ? 'rotate(0)' : 'rotate(-90deg)',
             transition: 'transform 0.15s',
             display: 'flex',
@@ -176,7 +176,7 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
             <div
               className="sidebar-item"
               onClick={() => togglePage(group.id)}
-              style={{ paddingLeft: 8, color: '#999', fontSize: 11 }}
+              style={{ paddingLeft: 8, color: 'var(--figma-text-secondary)', fontSize: 11 }}
             >
               <span style={{
                 transform: expandedPages[group.id] ? 'rotate(90deg)' : 'none',
