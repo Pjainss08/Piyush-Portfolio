@@ -34,7 +34,8 @@ export const PROJECTS = [
 ];
 
 export const SOCIAL_LINKS = [
-  { label: 'X (Twitter)', url: '#', hasSettings: true },
-  { label: 'LinkedIn', url: '#' },
-  { label: 'Instagram', url: '#' },
+  { label: 'X (Twitter)', url: 'https://x.com/piyushxpj', hasSettings: true },
+  { label: 'LinkedIn', url: 'https://linkedin.com/in/piyushjainxpj/' },
+  { label: 'Instagram', url: 'https://www.instagram.com/pj.piyush_/' },
+  { label: 'Email', email: 'hey@piyushjain.in' },
 ];

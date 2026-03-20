@@ -89,6 +89,7 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange 
 
 function PageProperties({ canvasBg = '#F2F2F2', onCanvasBgChange = () => {} }) {
   const [showPicker, setShowPicker] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
 
   return (
     <>
@@ -150,23 +151,47 @@ function PageProperties({ canvasBg = '#F2F2F2', onCanvasBgChange = () => {} }) {
 
       {/* Social Links */}
       {SOCIAL_LINKS.map((link, i) => (
-        <a
-          key={i}
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none' }}
-        >
-          <div className="prop-row" style={{ justifyContent: 'space-between', cursor: 'pointer' }}>
-            <span style={{ color: '#fff', fontSize: 14 }}>{link.label}</span>
-            <span style={{ color: '#666', display: 'flex' }}>
-              <ArrowUpRight size={14} />
-            </span>
+        link.email ? (
+          <div key={i}>
+            <div
+              className="prop-row"
+              style={{ justifyContent: 'space-between', cursor: 'pointer' }}
+              onClick={() => {
+                navigator.clipboard.writeText(link.email);
+                setEmailCopied(true);
+                setTimeout(() => setEmailCopied(false), 2000);
+              }}
+            >
+              <span style={{ color: emailCopied ? '#0ACF83' : '#fff', fontSize: 14, transition: 'color 0.2s' }}>
+                {emailCopied ? 'Email Copied' : link.label}
+              </span>
+              <span style={{ color: '#666', display: 'flex' }}>
+                <ArrowUpRight size={14} />
+              </span>
+            </div>
+            {i < SOCIAL_LINKS.length - 1 && (
+              <div style={{ height: 1, background: 'var(--figma-border)', margin: '2px 0' }} />
+            )}
           </div>
-          {i < SOCIAL_LINKS.length - 1 && (
-            <div style={{ height: 1, background: 'var(--figma-border)', margin: '2px 0' }} />
-          )}
-        </a>
+        ) : (
+          <a
+            key={i}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none' }}
+          >
+            <div className="prop-row" style={{ justifyContent: 'space-between', cursor: 'pointer' }}>
+              <span style={{ color: '#fff', fontSize: 14 }}>{link.label}</span>
+              <span style={{ color: '#666', display: 'flex' }}>
+                <ArrowUpRight size={14} />
+              </span>
+            </div>
+            {i < SOCIAL_LINKS.length - 1 && (
+              <div style={{ height: 1, background: 'var(--figma-border)', margin: '2px 0' }} />
+            )}
+          </a>
+        )
       ))}
     </>
   );

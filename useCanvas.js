@@ -21,6 +21,17 @@ export default function useCanvas(initialTransform = { x: -50, y: -50, scale: 0.
     animRef.current = [];
   }, []);
 
+  // Prevent browser-level zoom (Cmd+scroll / pinch) on the entire document
+  useEffect(() => {
+    const preventBrowserZoom = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+      }
+    };
+    document.addEventListener('wheel', preventBrowserZoom, { passive: false });
+    return () => document.removeEventListener('wheel', preventBrowserZoom);
+  }, []);
+
   // Attach wheel listener natively with { passive: false } so preventDefault works
   useEffect(() => {
     const el = containerRef.current;

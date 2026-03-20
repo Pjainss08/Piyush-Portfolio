@@ -45,9 +45,35 @@ function CanvasTextItem({ item, onUpdate, onDelete }) {
   );
 }
 
-function CanvasShapeItem({ item }) {
+function CanvasShapeItem({ item, isSelected, onSelect }) {
   const isCircle = item.shapeType === 'circle';
   const isLine = item.shapeType === 'line';
+  const w = Math.abs(item.width);
+  const h = Math.abs(item.height);
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    onSelect(item.id);
+  };
+
+  const resizeHandles = isSelected && !isLine ? (
+    <>
+      <div className="resize-handle" style={{ top: -4, left: -4 }} />
+      <div className="resize-handle" style={{ top: -4, right: -4 }} />
+      <div className="resize-handle" style={{ bottom: -4, left: -4 }} />
+      <div className="resize-handle" style={{ bottom: -4, right: -4 }} />
+    </>
+  ) : null;
+
+  const sizeLabel = isSelected && !isLine ? (
+    <div style={{
+      position: 'absolute', bottom: -28, left: '50%', transform: 'translateX(-50%)',
+      background: '#0d99ff', color: '#fff', fontSize: 11, fontWeight: 500,
+      padding: '2px 8px', borderRadius: 3, whiteSpace: 'nowrap', pointerEvents: 'none',
+    }}>
+      {Math.round(w)} × {Math.round(h)}
+    </div>
+  ) : null;
 
   if (isLine) {
     const dx = item.width;
@@ -57,10 +83,11 @@ function CanvasShapeItem({ item }) {
     return (
       <div
         data-card
+        onClick={handleClick}
         style={{
           position: 'absolute', left: item.x, top: item.y,
-          width: len, height: 2,
-          background: item.color,
+          width: len, height: isSelected ? 4 : 2,
+          background: isSelected ? '#0d99ff' : '#999',
           transform: `rotate(${angle}deg)`,
           transformOrigin: '0 0',
           cursor: 'default',
@@ -72,16 +99,20 @@ function CanvasShapeItem({ item }) {
   return (
     <div
       data-card
+      onClick={handleClick}
       style={{
         position: 'absolute',
         left: item.x, top: item.y,
-        width: Math.abs(item.width), height: Math.abs(item.height),
+        width: w, height: h,
         borderRadius: isCircle ? '50%' : 0,
-        border: `2px solid ${item.color}`,
-        background: `${item.color}20`,
+        border: `2px solid ${isSelected ? '#0d99ff' : '#ccc'}`,
+        background: '#e5e5e5',
         cursor: 'default',
       }}
-    />
+    >
+      {resizeHandles}
+      {sizeLabel}
+    </div>
   );
 }
 
@@ -173,6 +204,19 @@ export default function Canvas({
   canvasItems, setCanvasItems, onResetTool,
 }) {
   const [dragState, setDragState] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  // Delete selected canvas item with Delete/Backspace key
+  useEffect(() => {
+    const handler = (e) => {
+      if (selectedItem && (e.key === 'Delete' || e.key === 'Backspace') && !e.target.closest('input, textarea')) {
+        setCanvasItems(prev => prev.filter(item => item.id !== selectedItem));
+        setSelectedItem(null);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [selectedItem, setCanvasItems]);
 
   const getWorldCoords = useCallback((e) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -233,6 +277,7 @@ export default function Canvas({
       onResetTool();
     } else if (activeTool === 'move') {
       onSelectCard(null);
+      setSelectedItem(null);
     }
   }, [activeTool, dragState, getWorldCoords, onCanvasClick, onSelectCard, onResetTool]);
 
@@ -323,7 +368,7 @@ export default function Canvas({
         {/* User-placed items */}
         {canvasItems.map(item => {
           if (item.type === 'text') return <CanvasTextItem key={item.id} item={item} onUpdate={updateItem} onDelete={deleteItem} />;
-          if (item.type === 'shape') return <CanvasShapeItem key={item.id} item={item} />;
+          if (item.type === 'shape') return <CanvasShapeItem key={item.id} item={item} isSelected={selectedItem === item.id} onSelect={(id) => { setSelectedItem(id); onSelectCard(null); }} />;
           if (item.type === 'comment') return <CanvasCommentItem key={item.id} item={item} onUpdate={updateItem} />;
           return null;
         })}

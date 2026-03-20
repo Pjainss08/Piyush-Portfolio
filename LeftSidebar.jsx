@@ -48,14 +48,20 @@ const icons = {
 export default function LeftSidebar({ activePage, onPageClick, selectedCard, onCardClick }) {
   const [layersOpen, setLayersOpen] = useState(true);
   const [expandedPages, setExpandedPages] = useState({ about: true, work: true, playground: true, builds: true });
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const togglePage = (pageId) => {
     setExpandedPages(prev => ({ ...prev, [pageId]: !prev[pageId] }));
   };
 
+  const filteredProjects = searchQuery
+    ? PROJECTS.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    : PROJECTS;
+
   const groupedProjects = PAGES.map(page => ({
     ...page,
-    projects: PROJECTS.filter(p => p.page === page.id),
+    projects: filteredProjects.filter(p => p.page === page.id),
   }));
 
   return (
@@ -96,19 +102,42 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
           File
         </div>
         <div style={{ flex: 1 }} />
-        <div style={{ color: '#999', cursor: 'pointer' }}>
+        <div
+          style={{ color: searchOpen ? '#fff' : '#999', cursor: 'pointer' }}
+          onClick={() => { setSearchOpen(!searchOpen); if (searchOpen) setSearchQuery(''); }}
+        >
           {icons.search}
         </div>
       </div>
+
+      {/* Search bar */}
+      {searchOpen && (
+        <div style={{ padding: '6px 12px', borderBottom: '1px solid var(--figma-border)' }}>
+          <input
+            autoFocus
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Escape') { setSearchOpen(false); setSearchQuery(''); } }}
+            placeholder="Search layers..."
+            style={{
+              width: '100%',
+              background: 'var(--figma-bg)',
+              border: '1px solid var(--figma-border)',
+              borderRadius: 4,
+              color: '#fff',
+              fontSize: 12,
+              padding: '6px 8px',
+              fontFamily: 'Inter, sans-serif',
+              outline: 'none',
+            }}
+          />
+        </div>
+      )}
 
       {/* Pages section */}
       <div>
         <div className="section-header">
           <span>Pages</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ cursor: 'pointer' }}>
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
         </div>
         {PAGES.map(page => (
           <div
