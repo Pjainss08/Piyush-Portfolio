@@ -1,0 +1,27 @@
+node_modules/
+.DS_Store
+.next/
+dist/
+.claude/
+.cursor/
+
+# Other projects in workspace
+curated-tweets/
+design-agency-landing/
+designer-portfolio/
+dot-matrix-studio/
+feedback-app/
+markup/
+mumbai-uncovered/
+my-video/
+my-videoY/
+piyush-lab/
+portfolio/
+tunai/
+
+# Old/unused files
+TopBar.jsx
+bento-design-system-variables.json
+figma-variables-dtcg.json
+figma-variables-import.json
+illustrator-showcase.html

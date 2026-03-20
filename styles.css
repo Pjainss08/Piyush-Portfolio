@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+:root {
+  --figma-bg: #1e1e1e;
+  --figma-surface: #2c2c2c;
+  --figma-surface-hover: #363636;
+  --figma-border: #3d3d3d;
+  --figma-text: #ffffff;
+  --figma-text-secondary: #999999;
+  --figma-text-tertiary: #666666;
+  --figma-blue: #0d99ff;
+  --figma-blue-bg: rgba(13, 153, 255, 0.15);
+  --figma-canvas: #f5f5f5;
+  --figma-dot: #e0e0e0;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+  background: var(--figma-bg);
+  color: var(--figma-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.canvas-viewport {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  cursor: grab;
+  background: var(--figma-canvas);
+}
+
+.canvas-viewport.is-panning {
+  cursor: grabbing;
+}
+
+.canvas-world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+  width: 1px;
+  height: 1px;
+  overflow: visible;
+}
+
+.sidebar {
+  background: var(--figma-surface);
+  border-color: var(--figma-border);
+  font-size: 11px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+
+.section-header {
+  color: var(--figma-text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  cursor: pointer;
+  color: var(--figma-text);
+  font-size: 14px;
+  border-radius: 2px;
+  transition: background 0.1s;
+}
+
+.sidebar-item:hover {
+  background: var(--figma-surface-hover);
+}
+
+.sidebar-item.active {
+  background: var(--figma-blue-bg);
+  color: var(--figma-blue);
+}
+
+.project-card {
+  position: absolute;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: outline-color 0.15s;
+  outline: 2px solid transparent;
+  outline-offset: 0;
+}
+
+.project-card:hover {
+  outline-color: var(--figma-blue);
+}
+
+.project-card.selected {
+  outline-color: var(--figma-blue);
+}
+
+.frame-label {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  font-size: 11px;
+  color: var(--figma-blue);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border: 1px solid var(--figma-blue);
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+.prop-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 11px;
+}
+
+.prop-label {
+  color: var(--figma-text-secondary);
+  min-width: 24px;
+}
+
+.prop-input {
+  background: var(--figma-bg);
+  border: 1px solid var(--figma-border);
+  border-radius: 4px;
+  color: var(--figma-text);
+  font-size: 11px;
+  padding: 4px 8px;
+  font-family: var(--font);
+  width: 100%;
+}
+
+.tab {
+  padding: 8px 16px;
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--figma-text-secondary);
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s;
+}
+
+.tab:hover {
+  color: var(--figma-text);
+}
+
+.tab.active {
+  color: var(--figma-text);
+  border-bottom-color: var(--figma-blue);
+}
