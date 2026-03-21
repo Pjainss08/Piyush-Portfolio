@@ -12,6 +12,7 @@ export default function App() {
   const [canvasBg, setCanvasBg] = useState('#F2F2F2');
   const [activeTool, setActiveTool] = useState('move');
   const [shapeType, setShapeType] = useState('rectangle');
+  const [stickyColor, setStickyColor] = useState('yellow');
   const [canvasItems, setCanvasItems] = useState([]);
 
   // Escape key resets to move tool
@@ -59,16 +60,14 @@ export default function App() {
       y: worldY,
     };
 
-    if (activeTool === 'text') {
-      newItem.text = 'Double click to edit';
-      newItem.fontSize = 24;
-    } else if (activeTool === 'comment') {
+    if (activeTool === 'sticky') {
+      newItem.type = 'sticky';
       newItem.text = '';
-      newItem.author = 'PJ';
+      newItem.color = stickyColor;
     }
 
     setCanvasItems(prev => [...prev, newItem]);
-  }, [activeTool]);
+  }, [activeTool, stickyColor]);
 
   return (
     <div style={{
@@ -102,14 +101,17 @@ export default function App() {
           canvasItems={canvasItems}
           setCanvasItems={setCanvasItems}
           onResetTool={resetTool}
+          stickyColor={stickyColor}
         />
 
         {/* Bottom Toolbar (floating over canvas) */}
         <BottomToolbar
           activeTool={activeTool}
           shapeType={shapeType}
+          stickyColor={stickyColor}
           onToolChange={setActiveTool}
           onShapeTypeChange={setShapeType}
+          onStickyColorChange={setStickyColor}
         />
 
         {/* Right Sidebar */}

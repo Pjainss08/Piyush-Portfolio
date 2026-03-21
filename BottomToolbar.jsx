@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
+import { STICKY_COLORS } from './Canvas.jsx';
 
 const toolIcons = {
   move: (
@@ -6,53 +7,65 @@ const toolIcons = {
       <path d="m9.308 12.486-5.84-1.348a.591.591 0 0 1-.183-1.077l.485-.305a51.2 51.2 0 0 1 16.548-6.734.556.556 0 0 1 .66.66 51.2 51.2 0 0 1-6.734 16.548l-.305.485a.592.592 0 0 1-1.077-.183l-1.348-5.84a2.94 2.94 0 0 0-2.206-2.206Z" />
     </svg>
   ),
-  text: (
+  sticky: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 19v-6m-7 6V5m4 8h6M4 5h12" />
+      <path d="M14 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8" />
+      <path d="M14 21l6-6" />
+      <path d="M14 15v6" />
+      <path d="M20 15h-6" />
     </svg>
   ),
   rectangle: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="18" height="18" rx="2" />
     </svg>
   ),
   circle: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M2.85 12a9.15 9.15 0 1 0 18.3 0 9.15 9.15 0 0 0-18.3 0Z" />
     </svg>
   ),
   line: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="4" y1="20" x2="20" y2="4" />
     </svg>
   ),
-  comment: (
+  rectangleTool: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M2.508 9.08c0-2.129 0-3.193.414-4.005a3.8 3.8 0 0 1 1.661-1.66C5.396 3 6.46 3 8.588 3h6.84c2.127 0 3.191 0 4.004.414a3.8 3.8 0 0 1 1.66 1.66c.415.813.415 1.877.415 4.006v4.56c0 .705 0 1.058-.047 1.353a3.8 3.8 0 0 1-3.159 3.16c-.57.09-1.148 0-1.72.054a1.9 1.9 0 0 0-1.232.616c-.334.37-.61.802-.91 1.2-.824 1.1-1.237 1.651-1.743 1.848a1.9 1.9 0 0 1-1.377 0c-.506-.197-.919-.747-1.744-1.848-.298-.398-.575-.83-.91-1.2a1.9 1.9 0 0 0-1.231-.616c-.571-.053-1.15.035-1.72-.055a3.8 3.8 0 0 1-3.159-3.159c-.047-.295-.047-.648-.047-1.354z" />
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+    </svg>
+  ),
+  check: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 12l5 5L20 7" />
     </svg>
   ),
 };
 
 const SHAPE_OPTIONS = [
-  { id: 'rectangle', label: 'Rectangle', icon: toolIcons.rectangle },
-  { id: 'circle', label: 'Circle', icon: toolIcons.circle },
-  { id: 'line', label: 'Line', icon: toolIcons.line },
+  { id: 'rectangle', label: 'Rectangle', icon: toolIcons.rectangle, shortcut: 'R' },
+  { id: 'line', label: 'Line', icon: toolIcons.line, shortcut: 'L' },
+  { id: 'circle', label: 'Ellipse', icon: toolIcons.circle, shortcut: 'O' },
 ];
 
-export default function BottomToolbar({ activeTool, shapeType, onToolChange, onShapeTypeChange }) {
-  const [showShapeMenu, setShowShapeMenu] = useState(false);
-  const menuRef = useRef(null);
+const STICKY_OPTIONS = STICKY_COLORS.map(c => ({
+  ...c,
+  label: c.id.charAt(0).toUpperCase() + c.id.slice(1),
+}));
 
-  // Close menu on outside click
-  useEffect(() => {
-    const handler = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setShowShapeMenu(false);
-      }
-    };
-    if (showShapeMenu) document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [showShapeMenu]);
+export default function BottomToolbar({ activeTool, shapeType, stickyColor, onToolChange, onShapeTypeChange, onStickyColorChange }) {
+  const [hoveredTool, setHoveredTool] = useState(null);
+  const stickyTimeout = useRef(null);
+  const shapeTimeout = useRef(null);
+
+  const handleMouseEnter = (tool, timeoutRef) => {
+    clearTimeout(timeoutRef.current);
+    setHoveredTool(tool);
+  };
+
+  const handleMouseLeave = (timeoutRef) => {
+    timeoutRef.current = setTimeout(() => setHoveredTool(null), 200);
+  };
 
   const currentShapeIcon = SHAPE_OPTIONS.find(s => s.id === shapeType)?.icon || toolIcons.rectangle;
 
@@ -77,21 +90,65 @@ export default function BottomToolbar({ activeTool, shapeType, onToolChange, onS
         {toolIcons.move}
       </ToolBtn>
 
-      {/* Text */}
-      <ToolBtn active={activeTool === 'text'} label="Text" onClick={() => onToolChange('text')}>
-        {toolIcons.text}
-      </ToolBtn>
+      {/* Sticky Note */}
+      <div
+        style={{ position: 'relative' }}
+        onMouseEnter={() => handleMouseEnter('sticky', stickyTimeout)}
+        onMouseLeave={() => handleMouseLeave(stickyTimeout)}
+      >
+        <ToolBtn
+          active={activeTool === 'sticky'}
+          label="Sticky Note"
+          onClick={() => onToolChange('sticky')}
+        >
+          {toolIcons.sticky}
+          <div style={{
+            position: 'absolute', bottom: 3, right: 3,
+            width: 6, height: 6, borderRadius: '50%',
+            background: (STICKY_COLORS.find(c => c.id === stickyColor) || STICKY_COLORS[0]).bg,
+            border: '1px solid rgba(0,0,0,0.15)',
+          }} />
+        </ToolBtn>
 
-      {/* Shape (with submenu) */}
-      <div ref={menuRef} style={{ position: 'relative' }}>
+        {hoveredTool === 'sticky' && (
+          <DropdownMenu>
+            {STICKY_OPTIONS.map(opt => (
+              <DropdownItem
+                key={opt.id}
+                selected={stickyColor === opt.id}
+                onClick={() => {
+                  onStickyColorChange(opt.id);
+                  onToolChange('sticky');
+                  setHoveredTool(null);
+                }}
+              >
+                <span style={{ width: 20, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+                  {stickyColor === opt.id && toolIcons.check}
+                </span>
+                <div style={{
+                  width: 16, height: 16, borderRadius: 3,
+                  background: opt.bg, border: '1px solid rgba(0,0,0,0.1)',
+                  flexShrink: 0,
+                }} />
+                <span>{opt.label}</span>
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        )}
+      </div>
+
+      {/* Shape */}
+      <div
+        style={{ position: 'relative' }}
+        onMouseEnter={() => handleMouseEnter('shape', shapeTimeout)}
+        onMouseLeave={() => handleMouseLeave(shapeTimeout)}
+      >
         <ToolBtn
           active={activeTool === 'shape'}
           label="Shape"
           onClick={() => { onToolChange('shape'); onShapeTypeChange(shapeType); }}
-          onContextMenu={(e) => { e.preventDefault(); setShowShapeMenu(true); }}
         >
           {currentShapeIcon}
-          {/* Small triangle indicator */}
           <div style={{
             position: 'absolute', bottom: 3, right: 3,
             width: 0, height: 0,
@@ -101,63 +158,85 @@ export default function BottomToolbar({ activeTool, shapeType, onToolChange, onS
           }} />
         </ToolBtn>
 
-        {/* Long press / click also opens menu */}
-        <div
-          data-no-pan
-          style={{
-            position: 'absolute', bottom: 2, right: 2, width: 12, height: 12,
-            cursor: 'pointer', zIndex: 2,
-          }}
-          onClick={(e) => { e.stopPropagation(); setShowShapeMenu(!showShapeMenu); }}
-        />
-
-        {/* Shape submenu */}
-        {showShapeMenu && (
-          <div data-no-pan style={{
-            position: 'absolute', bottom: 48, left: '50%', transform: 'translateX(-50%)',
-            background: '#ffffff', border: '1px solid #e0e0e0', borderRadius: 8,
-            padding: 4, minWidth: 140, boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-          }}>
+        {hoveredTool === 'shape' && (
+          <DropdownMenu>
             {SHAPE_OPTIONS.map(opt => (
-              <div
+              <DropdownItem
                 key={opt.id}
-                data-no-pan
+                selected={shapeType === opt.id}
                 onClick={() => {
                   onShapeTypeChange(opt.id);
                   onToolChange('shape');
-                  setShowShapeMenu(false);
-                }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '6px 10px', borderRadius: 4, cursor: 'pointer',
-                  color: shapeType === opt.id ? '#fff' : '#666',
-                  background: shapeType === opt.id ? '#0d99ff' : 'transparent',
-                  fontSize: 12, transition: 'all 0.1s',
+                  setHoveredTool(null);
                 }}
               >
-                {opt.icon}
-                <span>{opt.label}</span>
-              </div>
+                <span style={{ width: 20, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+                  {shapeType === opt.id && toolIcons.check}
+                </span>
+                <span style={{ display: 'flex', flexShrink: 0 }}>{opt.icon}</span>
+                <span style={{ flex: 1 }}>{opt.label}</span>
+                <span style={{ color: '#888', fontSize: 12, fontWeight: 400 }}>{opt.shortcut}</span>
+              </DropdownItem>
             ))}
-          </div>
+          </DropdownMenu>
         )}
       </div>
-
-      {/* Comment */}
-      <ToolBtn active={activeTool === 'comment'} label="Comment" onClick={() => onToolChange('comment')}>
-        {toolIcons.comment}
-      </ToolBtn>
     </div>
   );
 }
 
-function ToolBtn({ children, active, label, onClick, onContextMenu }) {
+function DropdownMenu({ children }) {
+  return (
+    <div data-no-pan style={{
+      position: 'absolute',
+      bottom: 46,
+      left: '50%',
+      transform: 'translateX(-50%)',
+      background: '#2c2c2c',
+      borderRadius: 8,
+      padding: '4px 0',
+      minWidth: 180,
+      boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
+      border: '1px solid #444',
+      zIndex: 100,
+    }}>
+      {children}
+    </div>
+  );
+}
+
+function DropdownItem({ children, selected, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      data-no-pan
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '7px 12px',
+        cursor: 'pointer',
+        color: '#e0e0e0',
+        fontSize: 13,
+        fontWeight: 500,
+        background: hovered ? '#3d3d3d' : 'transparent',
+        transition: 'background 0.08s',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function ToolBtn({ children, active, label, onClick }) {
   return (
     <div
       data-no-pan
       title={label}
       onClick={onClick}
-      onContextMenu={onContextMenu}
       style={{
         width: 36, height: 36, position: 'relative',
         display: 'flex', alignItems: 'center', justifyContent: 'center',

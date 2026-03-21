@@ -2,58 +2,220 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import ProjectCard from './ProjectCard.jsx';
 import { PAGES, PROJECTS } from './canvasData.js';
 
-function CanvasTextItem({ item, onUpdate, onDelete }) {
-  const [editing, setEditing] = useState(false);
-  const [text, setText] = useState(item.text);
+const STICKY_COLORS = [
+  { id: 'yellow', bg: '#FEFF9C', fold: '#E6E78C', shadow: 'rgba(200,180,0,0.2)' },
+  { id: 'pink', bg: '#FF7EB3', fold: '#E06A9A', shadow: 'rgba(180,60,100,0.2)' },
+  { id: 'green', bg: '#B5E8B5', fold: '#9FCC9F', shadow: 'rgba(80,150,80,0.2)' },
+  { id: 'blue', bg: '#A7D8F0', fold: '#8FC0D8', shadow: 'rgba(60,120,160,0.2)' },
+  { id: 'purple', bg: '#D5B8FF', fold: '#BCA0E6', shadow: 'rgba(120,80,180,0.2)' },
+  { id: 'orange', bg: '#FFD59E', fold: '#E6BD88', shadow: 'rgba(180,140,50,0.2)' },
+];
+
+function CanvasStickyItem({ item, isSelected, onSelect, onUpdate, onDelete, transform, containerRef }) {
+  const [editing, setEditing] = useState(!item.text);
+  const [text, setText] = useState(item.text || '');
+  const [dragging, setDragging] = useState(false);
+  const dragStart = useRef(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
     if (editing && inputRef.current) {
       inputRef.current.focus();
-      inputRef.current.select();
     }
   }, [editing]);
+
+  const handleMouseDown = (e) => {
+    if (editing) return;
+    e.stopPropagation();
+    onSelect(item.id);
+    dragStart.current = {
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      itemX: item.x,
+      itemY: item.y,
+    };
+
+    const handleMouseMove = (e) => {
+      if (!dragStart.current) return;
+      const dx = (e.clientX - dragStart.current.mouseX) / transform.scale;
+      const dy = (e.clientY - dragStart.current.mouseY) / transform.scale;
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) setDragging(true);
+      onUpdate(item.id, {
+        x: dragStart.current.itemX + dx,
+        y: dragStart.current.itemY + dy,
+      });
+    };
+
+    const handleMouseUp = () => {
+      dragStart.current = null;
+      setTimeout(() => setDragging(false), 0);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleDoubleClick = (e) => {
+    e.stopPropagation();
+    setEditing(true);
+  };
+
+  const handleBlur = () => {
+    setEditing(false);
+    if (text.trim()) {
+      onUpdate(item.id, { text });
+    } else {
+      onDelete(item.id);
+    }
+  };
+
+  const stickyColor = STICKY_COLORS.find(c => c.id === item.color) || STICKY_COLORS[0];
+  // Each sticky gets a deterministic slight rotation based on its id
+  const rotation = ((item.id.charCodeAt(item.id.length - 1) % 7) - 3) * 1.2;
 
   return (
     <div
       data-card
-      style={{ position: 'absolute', left: item.x, top: item.y, minWidth: 40, cursor: 'default' }}
-      onDoubleClick={(e) => { e.stopPropagation(); setEditing(true); }}
+      onMouseDown={handleMouseDown}
+      onDoubleClick={handleDoubleClick}
+      style={{
+        position: 'absolute',
+        left: item.x,
+        top: item.y,
+        width: 220,
+        minHeight: 200,
+        transform: `rotate(${rotation}deg)`,
+        cursor: editing ? 'text' : dragging ? 'grabbing' : 'grab',
+        userSelect: 'none',
+        filter: isSelected ? 'drop-shadow(0 0 0 transparent)' : 'none',
+      }}
     >
-      {editing ? (
-        <input
-          ref={inputRef}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onBlur={() => { setEditing(false); text.trim() ? onUpdate(item.id, { text }) : onDelete(item.id); }}
-          onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') { setText(item.text); setEditing(false); } }}
-          style={{
-            background: 'transparent', border: '1px solid #0d99ff', borderRadius: 2,
-            color: '#333', fontSize: item.fontSize || 24, fontFamily: 'Inter, sans-serif',
-            padding: '2px 4px', outline: 'none', minWidth: 100,
-          }}
-        />
-      ) : (
-        <span style={{
-          fontSize: item.fontSize || 24, color: '#333', fontFamily: 'Inter, sans-serif',
-          userSelect: 'none', padding: '2px 4px', borderRadius: 2, border: '1px solid transparent',
-        }}>
-          {text}
-        </span>
+      {/* Main paper */}
+      <div style={{
+        width: '100%',
+        minHeight: 200,
+        background: stickyColor.bg,
+        borderRadius: '2px 2px 2px 2px',
+        boxShadow: isSelected
+          ? `0 0 0 2px #0d99ff, 2px 4px 12px ${stickyColor.shadow}, 4px 8px 20px rgba(0,0,0,0.12)`
+          : `2px 4px 10px ${stickyColor.shadow}, 3px 6px 16px rgba(0,0,0,0.08)`,
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        {/* Subtle top sticky strip */}
+        <div style={{
+          height: 4,
+          background: `linear-gradient(180deg, rgba(0,0,0,0.06) 0%, transparent 100%)`,
+          flexShrink: 0,
+        }} />
+
+        {editing ? (
+          <textarea
+            ref={inputRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') { setText(item.text || ''); setEditing(false); }
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            style={{
+              flex: 1,
+              background: 'transparent',
+              border: 'none',
+              color: '#444',
+              fontSize: 15,
+              fontFamily: "'Segoe UI', 'Inter', sans-serif",
+              padding: '14px 16px',
+              outline: 'none',
+              resize: 'none',
+              minHeight: 160,
+              lineHeight: 1.6,
+            }}
+            placeholder="Type here..."
+          />
+        ) : (
+          <div style={{
+            flex: 1,
+            padding: '14px 16px',
+            fontSize: 15,
+            color: '#444',
+            fontFamily: "'Segoe UI', 'Inter', sans-serif",
+            lineHeight: 1.6,
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+          }}>
+            {text || 'Double click to edit'}
+          </div>
+        )}
+
+        {/* Bottom-right folded corner */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          width: 28,
+          height: 28,
+          background: `linear-gradient(135deg, ${stickyColor.bg} 50%, ${stickyColor.fold} 50%)`,
+          filter: 'drop-shadow(-1px -1px 1px rgba(0,0,0,0.06))',
+        }} />
+      </div>
+
+      {/* Selection handles */}
+      {isSelected && (
+        <>
+          <div className="resize-handle" style={{ top: -4, left: -4 }} />
+          <div className="resize-handle" style={{ top: -4, right: -4 }} />
+          <div className="resize-handle" style={{ bottom: -4, left: -4 }} />
+          <div className="resize-handle" style={{ bottom: -4, right: -4 }} />
+        </>
       )}
     </div>
   );
 }
 
-function CanvasShapeItem({ item, isSelected, onSelect }) {
+function CanvasShapeItem({ item, isSelected, onSelect, onUpdate, transform }) {
   const isCircle = item.shapeType === 'circle';
   const isLine = item.shapeType === 'line';
   const w = Math.abs(item.width);
   const h = Math.abs(item.height);
+  const [dragging, setDragging] = useState(false);
+  const dragStart = useRef(null);
 
-  const handleClick = (e) => {
+  const handleMouseDown = (e) => {
     e.stopPropagation();
     onSelect(item.id);
+    dragStart.current = {
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      itemX: item.x,
+      itemY: item.y,
+    };
+
+    const handleMouseMove = (e) => {
+      if (!dragStart.current) return;
+      const dx = (e.clientX - dragStart.current.mouseX) / transform.scale;
+      const dy = (e.clientY - dragStart.current.mouseY) / transform.scale;
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) setDragging(true);
+      onUpdate(item.id, {
+        x: dragStart.current.itemX + dx,
+        y: dragStart.current.itemY + dy,
+      });
+    };
+
+    const handleMouseUp = () => {
+      dragStart.current = null;
+      setTimeout(() => setDragging(false), 0);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
   };
 
   const resizeHandles = isSelected && !isLine ? (
@@ -83,14 +245,14 @@ function CanvasShapeItem({ item, isSelected, onSelect }) {
     return (
       <div
         data-card
-        onClick={handleClick}
+        onMouseDown={handleMouseDown}
         style={{
           position: 'absolute', left: item.x, top: item.y,
           width: len, height: isSelected ? 4 : 2,
           background: isSelected ? '#0d99ff' : '#999',
           transform: `rotate(${angle}deg)`,
           transformOrigin: '0 0',
-          cursor: 'default',
+          cursor: dragging ? 'grabbing' : 'grab',
         }}
       />
     );
@@ -99,7 +261,7 @@ function CanvasShapeItem({ item, isSelected, onSelect }) {
   return (
     <div
       data-card
-      onClick={handleClick}
+      onMouseDown={handleMouseDown}
       style={{
         position: 'absolute',
         left: item.x, top: item.y,
@@ -107,7 +269,7 @@ function CanvasShapeItem({ item, isSelected, onSelect }) {
         borderRadius: isCircle ? '50%' : 0,
         border: `2px solid ${isSelected ? '#0d99ff' : '#ccc'}`,
         background: '#e5e5e5',
-        cursor: 'default',
+        cursor: dragging ? 'grabbing' : 'grab',
       }}
     >
       {resizeHandles}
@@ -116,140 +278,8 @@ function CanvasShapeItem({ item, isSelected, onSelect }) {
   );
 }
 
-function CanvasCommentItem({ item, onUpdate, onDelete }) {
-  const [expanded, setExpanded] = useState(true);
-  const [editing, setEditing] = useState(!item.text);
-  const [draft, setDraft] = useState(item.text || '');
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    if (editing && inputRef.current) inputRef.current.focus();
-  }, [editing]);
-
-  const handleSubmit = () => {
-    if (draft.trim()) {
-      onUpdate(item.id, { text: draft.trim() });
-      setEditing(false);
-    }
-  };
-
-  const saved = item.text && !editing;
-
-  return (
-    <div data-card style={{ position: 'absolute', left: item.x, top: item.y, zIndex: 10 }}>
-      {/* Pin icon — only show when comment is saved and collapsed */}
-      {!expanded && (
-        <div
-          onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
-          style={{
-            width: 36, height: 36, borderRadius: '50%', background: '#0d99ff',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 13, fontWeight: 700, color: '#fff', cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-          }}
-        >
-          PJ
-        </div>
-      )}
-      {expanded && (
-        <div data-no-pan style={{
-          background: '#fff', borderRadius: 12, minWidth: 260,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.18)', overflow: 'hidden',
-        }}>
-          {saved ? (
-            /* Saved comment view */
-            <div style={{ padding: 14 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <div style={{
-                  width: 32, height: 32, borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
-                }}>
-                  <img src="/pj-avatar.jpeg" alt="PJ" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>Piyush Jain</span>
-                  <span style={{ fontSize: 11, color: '#aaa', marginLeft: 8 }}>just now</span>
-                </div>
-                <div
-                  onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
-                  style={{
-                    width: 22, height: 22, borderRadius: 4, display: 'flex',
-                    alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                    color: '#999', fontSize: 16, lineHeight: 1,
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = '#fee'; e.currentTarget.style.color = '#e74c3c'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#999'; }}
-                  title="Delete comment"
-                >
-                  ×
-                </div>
-              </div>
-              <div style={{ fontSize: 14, color: '#333', lineHeight: 1.5, paddingLeft: 42 }}>
-                {item.text}
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 10 }}>
-                <div
-                  onClick={(e) => { e.stopPropagation(); setEditing(true); setDraft(item.text); }}
-                  style={{ fontSize: 11, color: '#0d99ff', cursor: 'pointer' }}
-                >
-                  Edit
-                </div>
-                <div
-                  onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
-                  style={{ fontSize: 11, color: '#999', cursor: 'pointer' }}
-                >
-                  Minimize
-                </div>
-              </div>
-            </div>
-          ) : (
-            /* Editing view */
-            <div style={{ padding: 14 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
-                    <img src="/pj-avatar.jpeg" alt="PJ" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>PJ</div>
-                </div>
-                <div
-                  onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
-                  style={{
-                    width: 22, height: 22, borderRadius: 4, display: 'flex',
-                    alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                    color: '#999', fontSize: 16, lineHeight: 1,
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = '#fee'; e.currentTarget.style.color = '#e74c3c'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#999'; }}
-                  title="Delete comment"
-                >
-                  ×
-                </div>
-              </div>
-              <textarea
-                ref={inputRef}
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
-                placeholder="Add a comment..."
-                style={{
-                  width: '100%', minHeight: 60, background: '#f5f5f5', border: '1px solid #e5e5e5',
-                  borderRadius: 6, color: '#333', fontSize: 13, fontFamily: 'Inter, sans-serif',
-                  padding: 8, outline: 'none', resize: 'vertical', lineHeight: 1.4,
-                }}
-              />
-              <div style={{ fontSize: 10, color: '#aaa', marginTop: 6, textAlign: 'right' }}>
-                Press Enter to save
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
 // Drag preview for shape creation
-function DragPreview({ dragState, transform }) {
+function DragPreview({ dragState }) {
   if (!dragState) return null;
   const { startX, startY, currentX, currentY, shapeType } = dragState;
   const x = Math.min(startX, currentX);
@@ -286,7 +316,7 @@ export default function Canvas({
   transform, handlers, containerRef, isPanning,
   selectedCard, onSelectCard,
   canvasBg, activeTool, shapeType, onCanvasClick,
-  canvasItems, setCanvasItems, onResetTool,
+  canvasItems, setCanvasItems, onResetTool, stickyColor,
 }) {
   const [dragState, setDragState] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -333,7 +363,6 @@ export default function Canvas({
       const { startX, startY, currentX, currentY, shapeType: st } = dragState;
       const w = currentX - startX;
       const h = currentY - startY;
-      // Only create shape if dragged a minimum distance
       if (Math.abs(w) > 5 || Math.abs(h) > 5) {
         const newItem = {
           id: `item-${Date.now()}`,
@@ -343,7 +372,6 @@ export default function Canvas({
           y: st === 'line' ? startY : Math.min(startY, currentY),
           width: st === 'line' ? w : Math.abs(w),
           height: st === 'line' ? h : Math.abs(h),
-          color: '#0d99ff',
         };
         setCanvasItems(prev => [...prev, newItem]);
       }
@@ -354,9 +382,9 @@ export default function Canvas({
 
   const handleClick = useCallback((e) => {
     if (e.target.closest('[data-card]') || e.target.closest('[data-no-pan]')) return;
-    if (dragState) return; // don't handle click during drag
+    if (dragState) return;
 
-    if (activeTool === 'text' || activeTool === 'comment') {
+    if (activeTool === 'sticky') {
       const { x, y } = getWorldCoords(e);
       onCanvasClick(x, y);
       onResetTool();
@@ -372,16 +400,15 @@ export default function Canvas({
 
   const deleteItem = useCallback((id) => {
     setCanvasItems(prev => prev.filter(item => item.id !== id));
-  }, [setCanvasItems]);
+    if (selectedItem === id) setSelectedItem(null);
+  }, [setCanvasItems, selectedItem]);
 
   const cursorMap = {
     move: isPanning ? 'grabbing' : 'grab',
-    text: 'text',
+    sticky: 'crosshair',
     shape: 'crosshair',
-    comment: 'crosshair',
   };
 
-  // Merge handlers: canvas pan handlers + shape drag handlers
   const mergedHandlers = {
     ...handlers,
     onMouseDown: (e) => {
@@ -419,7 +446,6 @@ export default function Canvas({
       {...mergedHandlers}
       onClick={handleClick}
     >
-      {/* World container */}
       <div
         className="canvas-world"
         style={{
@@ -452,15 +478,36 @@ export default function Canvas({
 
         {/* User-placed items */}
         {canvasItems.map(item => {
-          if (item.type === 'text') return <CanvasTextItem key={item.id} item={item} onUpdate={updateItem} onDelete={deleteItem} />;
-          if (item.type === 'shape') return <CanvasShapeItem key={item.id} item={item} isSelected={selectedItem === item.id} onSelect={(id) => { setSelectedItem(id); onSelectCard(null); }} />;
-          if (item.type === 'comment') return <CanvasCommentItem key={item.id} item={item} onUpdate={updateItem} onDelete={deleteItem} />;
+          if (item.type === 'sticky') return (
+            <CanvasStickyItem
+              key={item.id}
+              item={item}
+              isSelected={selectedItem === item.id}
+              onSelect={(id) => { setSelectedItem(id); onSelectCard(null); }}
+              onUpdate={updateItem}
+              onDelete={deleteItem}
+              transform={transform}
+              containerRef={containerRef}
+            />
+          );
+          if (item.type === 'shape') return (
+            <CanvasShapeItem
+              key={item.id}
+              item={item}
+              isSelected={selectedItem === item.id}
+              onSelect={(id) => { setSelectedItem(id); onSelectCard(null); }}
+              onUpdate={updateItem}
+              transform={transform}
+            />
+          );
           return null;
         })}
 
         {/* Drag preview */}
-        <DragPreview dragState={dragState} transform={transform} />
+        <DragPreview dragState={dragState} />
       </div>
     </div>
   );
 }
+
+export { STICKY_COLORS };
