@@ -1,5 +1,5 @@
 export const PAGES = [
-  { id: 'about', label: 'About', x: 500, y: 350 },
+  { id: 'about', label: 'About', x: 450, y: 300 },
   { id: 'work', label: 'Work', x: 2850, y: 450 },
   { id: 'playground', label: 'Playground', x: 450, y: 2000 },
   { id: 'builds', label: 'Builds', x: 2700, y: 2000 },

@@ -86,7 +86,7 @@ export default function BottomToolbar({ activeTool, shapeType, stickyColor, onTo
       border: '1px solid #e0e0e0',
     }}>
       {/* Move */}
-      <ToolBtn active={activeTool === 'move'} label="Move" onClick={() => onToolChange('move')}>
+      <ToolBtn active={activeTool === 'move'} label="Move (V)" onClick={() => onToolChange('move')}>
         {toolIcons.move}
       </ToolBtn>
 
@@ -98,7 +98,7 @@ export default function BottomToolbar({ activeTool, shapeType, stickyColor, onTo
       >
         <ToolBtn
           active={activeTool === 'sticky'}
-          label="Sticky Note"
+          label="Sticky Note (S)"
           onClick={() => onToolChange('sticky')}
         >
           {toolIcons.sticky}
@@ -145,7 +145,7 @@ export default function BottomToolbar({ activeTool, shapeType, stickyColor, onTo
       >
         <ToolBtn
           active={activeTool === 'shape'}
-          label="Shape"
+          label="Shape (R)"
           onClick={() => { onToolChange('shape'); onShapeTypeChange(shapeType); }}
         >
           {currentShapeIcon}

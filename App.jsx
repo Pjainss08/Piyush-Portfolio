@@ -15,12 +15,51 @@ export default function App() {
   const [stickyColor, setStickyColor] = useState('yellow');
   const [canvasItems, setCanvasItems] = useState([]);
 
-  // Escape key resets to move tool
+  // Pan to About section on initial load
+  useEffect(() => {
+    const timer = setTimeout(() => panTo(480, 340, 0.55), 100);
+    return () => clearTimeout(timer);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Keyboard shortcuts
   useEffect(() => {
     const handler = (e) => {
-      if (e.key === 'Escape') {
-        setActiveTool('move');
-        setSelectedCard(null);
+      // Don't trigger shortcuts when typing in inputs
+      if (e.target.closest('input, textarea')) return;
+
+      switch (e.key) {
+        case 'Escape':
+          setActiveTool('move');
+          setSelectedCard(null);
+          break;
+        case 'v':
+        case 'V':
+          setActiveTool('move');
+          break;
+        case 's':
+        case 'S':
+          if (!e.metaKey && !e.ctrlKey) {
+            e.preventDefault();
+            setActiveTool('sticky');
+          }
+          break;
+        case 'r':
+        case 'R':
+          setActiveTool('shape');
+          setShapeType('rectangle');
+          break;
+        case 'o':
+        case 'O':
+          setActiveTool('shape');
+          setShapeType('circle');
+          break;
+        case 'l':
+        case 'L':
+          setActiveTool('shape');
+          setShapeType('line');
+          break;
+        default:
+          break;
       }
     };
     window.addEventListener('keydown', handler);
