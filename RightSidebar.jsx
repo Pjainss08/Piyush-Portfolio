@@ -63,7 +63,7 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange 
       }}>
         <div style={{
           padding: '8px 12px',
-          fontSize: 11,
+          fontSize: 14,
           fontWeight: 500,
           color: 'var(--figma-text)',
           borderBottom: '2px solid var(--figma-blue)',
@@ -97,8 +97,8 @@ function PageProperties({ canvasBg = '#F2F2F2', onCanvasBgChange = () => {} }) {
           border: '1px solid var(--figma-border)',
           flexShrink: 0,
         }} />
-        <span style={{ color: 'var(--figma-text)', fontSize: 11 }}>{canvasBg.replace('#', '').toUpperCase()}</span>
-        <span style={{ color: 'var(--figma-text-tertiary)', fontSize: 11, marginLeft: 'auto' }}>100 %</span>
+        <span style={{ color: 'var(--figma-text)', fontSize: 12 }}>{canvasBg.replace('#', '').toUpperCase()}</span>
+        <span style={{ color: 'var(--figma-text-tertiary)', fontSize: 12, marginLeft: 'auto' }}>100 %</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--figma-text-tertiary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
           <circle cx="12" cy="12" r="9" />
           <circle cx="12" cy="12" r="3" fill="var(--figma-text-tertiary)" />

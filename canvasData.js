@@ -1,16 +1,13 @@
 export const PAGES = [
-  { id: 'about', label: 'About', x: 450, y: 300 },
+  { id: 'about', label: 'About', x: 500, y: 350 },
   { id: 'work', label: 'Work', x: 2850, y: 450 },
   { id: 'playground', label: 'Playground', x: 450, y: 2000 },
   { id: 'builds', label: 'Builds', x: 2700, y: 2000 },
 ];
 
 export const PROJECTS = [
-  // About region — placeholder
-  { id: 'about-hero', title: 'About Me', page: 'about', x: 100, y: 100, width: 480, height: 320, color: '#ffffff', description: 'Designer & Developer' },
-  { id: 'about-skills', title: 'Skills', page: 'about', x: 650, y: 80, width: 340, height: 240, color: '#f0f0f0', description: 'What I do' },
-  { id: 'about-exp', title: 'Experience', page: 'about', x: 200, y: 500, width: 400, height: 280, color: '#e8f4ff', description: 'Where I\'ve been' },
-  { id: 'about-contact', title: 'Contact', page: 'about', x: 700, y: 420, width: 300, height: 200, color: '#fff3e0', description: 'Get in touch' },
+  // About region — collage (rendered by AboutSection component, these are layer entries only)
+  { id: 'about-collage', title: 'About Collage', page: 'about', x: 0, y: 0, width: 1200, height: 800, color: 'transparent', description: 'Personal introduction collage' },
 
   // Work region — scattered
   { id: 'work-1', title: 'Project Alpha', page: 'work', x: 2300, y: 80, width: 420, height: 300, color: '#1a1a2e', textColor: '#fff', description: 'Brand Identity' },

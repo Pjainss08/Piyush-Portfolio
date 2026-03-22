@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import ProjectCard from './ProjectCard.jsx';
+import AboutSection from './AboutSection.jsx';
 import { PAGES, PROJECTS } from './canvasData.js';
 
 const STICKY_COLORS = [
@@ -466,8 +467,11 @@ export default function Canvas({
           </div>
         ))}
 
-        {/* Project cards */}
-        {PROJECTS.map(project => (
+        {/* About Section collage */}
+        <AboutSection />
+
+        {/* Project cards (skip about region — handled by AboutSection) */}
+        {PROJECTS.filter(p => p.page !== 'about').map(project => (
           <ProjectCard
             key={project.id}
             project={project}

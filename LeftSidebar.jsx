@@ -77,10 +77,10 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
       <div style={{ padding: '12px 12px 10px 12px', borderBottom: '1px solid var(--figma-border)' }}>
         <div style={{ marginBottom: 2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--figma-text)' }}>Piyush Jain</span>
+            <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--figma-text)' }}>Piyush Jain</span>
             {icons.chevronDown(12)}
           </div>
-          <span style={{ fontSize: 11, color: 'var(--figma-text-secondary)', marginTop: 2, display: 'block' }}>Portfolio</span>
+          <span style={{ fontSize: 14, color: 'var(--figma-text-secondary)', marginTop: 2, display: 'block' }}>Portfolio</span>
         </div>
       </div>
 
@@ -93,7 +93,7 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
       }}>
         <div style={{
           padding: '8px 12px',
-          fontSize: 11,
+          fontSize: 13,
           fontWeight: 500,
           color: 'var(--figma-text)',
           borderBottom: '2px solid var(--figma-blue)',
@@ -176,7 +176,7 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
             <div
               className="sidebar-item"
               onClick={() => togglePage(group.id)}
-              style={{ paddingLeft: 8, color: 'var(--figma-text-secondary)', fontSize: 11 }}
+              style={{ paddingLeft: 8, color: 'var(--figma-text-secondary)', fontSize: 12 }}
             >
               <span style={{
                 transform: expandedPages[group.id] ? 'rotate(90deg)' : 'none',
@@ -196,7 +196,7 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
                 style={{ paddingLeft: 28 }}
               >
                 {icons.frame}
-                <span style={{ fontSize: 11 }}>{project.title}</span>
+                <span style={{ fontSize: 12 }}>{project.title}</span>
               </div>
             ))}
           </div>
