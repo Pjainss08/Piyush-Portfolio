@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import ProjectCard from './ProjectCard.jsx';
 import AboutSection from './AboutSection.jsx';
+import PlaygroundSection from './PlaygroundSection.jsx';
 import { PAGES, PROJECTS } from './canvasData.js';
 
 const STICKY_COLORS = [
@@ -453,8 +454,8 @@ export default function Canvas({
           transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
         }}
       >
-        {/* Page region labels */}
-        {PAGES.map(page => (
+        {/* Page region labels (skip About — handled by collage) */}
+        {PAGES.filter(p => p.id !== 'about' && p.id !== 'playground').map(page => (
           <div
             key={page.id}
             style={{
@@ -468,10 +469,13 @@ export default function Canvas({
         ))}
 
         {/* About Section collage */}
-        <AboutSection />
+        <AboutSection transform={transform} />
+
+        {/* Playground Section collage */}
+        <PlaygroundSection />
 
         {/* Project cards (skip about region — handled by AboutSection) */}
-        {PROJECTS.filter(p => p.page !== 'about').map(project => (
+        {PROJECTS.filter(p => p.page !== 'about' && p.page !== 'playground').map(project => (
           <ProjectCard
             key={project.id}
             project={project}

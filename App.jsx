@@ -17,8 +17,7 @@ export default function App() {
 
   // Pan to About section on initial load
   useEffect(() => {
-    const timer = setTimeout(() => panTo(500, 350, 0.55), 100);
-    return () => clearTimeout(timer);
+    panTo(620, 300);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keyboard shortcuts

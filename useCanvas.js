@@ -5,7 +5,7 @@ function clamp(val, min, max) {
   return Math.min(Math.max(val, min), max);
 }
 
-export default function useCanvas(initialTransform = { x: -50, y: -50, scale: 0.45 }) {
+export default function useCanvas(initialTransform = { x: -50, y: -50, scale: 0.7 }) {
   const [transform, setTransform] = useState(initialTransform);
   const isPanning = useRef(false);
   const startPos = useRef({ x: 0, y: 0 });
@@ -96,7 +96,7 @@ export default function useCanvas(initialTransform = { x: -50, y: -50, scale: 0.
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
 
-    const scale = targetScale || 0.45;
+    const scale = targetScale || 0.7;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     const destX = centerX - targetX * scale;

@@ -1,7 +1,7 @@
 export const PAGES = [
-  { id: 'about', label: 'About', x: 500, y: 350 },
+  { id: 'about', label: 'About', x: 620, y: 300 },
   { id: 'work', label: 'Work', x: 2850, y: 450 },
-  { id: 'playground', label: 'Playground', x: 450, y: 2000 },
+  { id: 'playground', label: 'Playground', x: 850, y: 1950 },
   { id: 'builds', label: 'Builds', x: 2700, y: 2000 },
 ];
 
@@ -17,11 +17,8 @@ export const PROJECTS = [
   { id: 'work-5', title: 'Project Epsilon', page: 'work', x: 2600, y: 850, width: 350, height: 240, color: '#e94560', textColor: '#fff', description: 'Marketing Site' },
   { id: 'work-6', title: 'Project Zeta', page: 'work', x: 3200, y: 120, width: 300, height: 380, color: '#2d4059', textColor: '#fff', description: 'E-commerce' },
 
-  // Playground region — experimental
-  { id: 'play-1', title: 'Experiment 01', page: 'playground', x: 100, y: 1700, width: 300, height: 300, color: '#ff6b6b', textColor: '#fff', description: 'Creative coding' },
-  { id: 'play-2', title: 'Experiment 02', page: 'playground', x: 480, y: 1750, width: 280, height: 250, color: '#feca57', description: 'Typography play' },
-  { id: 'play-3', title: 'Experiment 03', page: 'playground', x: 200, y: 2080, width: 350, height: 260, color: '#48dbfb', description: 'Motion study' },
-  { id: 'play-4', title: 'Experiment 04', page: 'playground', x: 620, y: 2050, width: 320, height: 280, color: '#ff9ff3', description: 'Color exploration' },
+  // Playground region — image collage (rendered by PlaygroundSection component)
+  { id: 'playground-collage', title: 'Playground Collage', page: 'playground', x: 0, y: 1700, width: 1400, height: 900, color: 'transparent', description: 'Experiments and explorations' },
 
   // Builds region — tools & products
   { id: 'build-1', title: 'Tool Alpha', page: 'builds', x: 2300, y: 1700, width: 380, height: 280, color: '#00d2d3', description: 'CLI Tool' },
