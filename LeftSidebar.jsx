@@ -77,10 +77,10 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
       <div style={{ padding: '12px 12px 10px 12px', borderBottom: '1px solid var(--figma-border)' }}>
         <div style={{ marginBottom: 2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--figma-text)' }}>PJ Portfolio Website</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--figma-text)' }}>Piyush Jain</span>
             {icons.chevronDown(12)}
           </div>
-          <span style={{ fontSize: 11, color: 'var(--figma-text-secondary)', marginTop: 2, display: 'block' }}>Work Projects</span>
+          <span style={{ fontSize: 11, color: 'var(--figma-text-secondary)', marginTop: 2, display: 'block' }}>Portfolio</span>
         </div>
       </div>
 
