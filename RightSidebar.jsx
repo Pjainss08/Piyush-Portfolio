@@ -48,7 +48,7 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange 
           fontSize: 12,
           fontWeight: 600,
           cursor: 'pointer',
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: 'Figtree, sans-serif',
         }}>
           Share
         </button>

@@ -127,7 +127,7 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
               color: 'var(--figma-text)',
               fontSize: 12,
               padding: '6px 8px',
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'Figtree, sans-serif',
               outline: 'none',
             }}
           />
