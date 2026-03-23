@@ -31,7 +31,15 @@ export const BUILDS_PROJECTS = [
     description: 'Convert any image into pixel art with this tool. Customize the pixel size and color palette.',
     image: '/build-pixel-pop.png',
     tags: ['Website Design', 'Product Design'],
-    url: 'https://pixel-art-grid-nu.vercel.app',
+    url: 'https://pixelart.piyushjain.in',
+  },
+  {
+    id: 'freetype-writer',
+    title: 'Freetype Writer',
+    description: 'A small space to write like a typewriter and export it as txt or a shareable envelope style PNG.',
+    image: '/typewriter.png',
+    tags: ['Visual Design', 'Product Design'],
+    url: 'https://freetypewriter.piyushjain.in',
   },
 ];
 
@@ -122,13 +130,17 @@ function BuildCard({ project, x, y, onSelect }) {
 export default function BuildsSection({ onSelectCard }) {
   const gap = 40;
   const cardW = 420;
-  const startX = 2300;
+  const startX = 2200;
   const startY = 1700;
 
+  const rowHeight = 520;
   const positions = [
+    // Row 1: 3 cards
     { x: startX, y: startY },
     { x: startX + cardW + gap, y: startY },
     { x: startX + (cardW + gap) * 2, y: startY },
+    // Row 2: 1 card centered
+    { x: startX + (cardW + gap), y: startY + rowHeight },
   ];
 
   return (

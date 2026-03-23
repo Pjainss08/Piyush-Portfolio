@@ -1,8 +1,8 @@
 export const PAGES = [
   { id: 'about', label: 'About', x: 620, y: 300 },
   { id: 'work', label: 'Work', x: 2860, y: 500 },
-  { id: 'playground', label: 'Playground', x: 850, y: 1950 },
-  { id: 'builds', label: 'Builds', x: 2760, y: 1850 },
+  { id: 'playground', label: 'Playground', x: 850, y: 2500 },
+  { id: 'builds', label: 'Builds', x: 2660, y: 2100 },
 ];
 
 export const PROJECTS = [
@@ -23,6 +23,7 @@ export const PROJECTS = [
   { id: 'build-farfield', title: 'Farfiled', page: 'builds', x: 2300, y: 1700, width: 420, height: 380, color: 'transparent', description: 'Social store for creatives to sell their assets onchain' },
   { id: 'build-dither-matrix', title: 'Dither Matrix', page: 'builds', x: 2760, y: 1700, width: 420, height: 380, color: 'transparent', description: 'Dither tool made for designers' },
   { id: 'build-pixel-pop', title: 'Pixel Pop Tool', page: 'builds', x: 3220, y: 1700, width: 420, height: 380, color: 'transparent', description: 'Convert any image into pixel art' },
+  { id: 'build-freetype-writer', title: 'Freetype Writer', page: 'builds', x: 2760, y: 2220, width: 420, height: 380, color: 'transparent', description: 'Write like a typewriter and export' },
 ];
 
 export const SOCIAL_LINKS = [

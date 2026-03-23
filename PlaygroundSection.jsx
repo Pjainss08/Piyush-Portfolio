@@ -1,38 +1,58 @@
 import React, { useState, useRef } from 'react';
 
-// Mosaic layout — images arranged around "Design Playground" center text
-// No overlapping, clean gaps, spread horizontally
-const PLAYGROUND_ITEMS = [
-  // Row 1 (top)
-  { src: '/frame-2147224024.png', x: 0, y: 0, w: 180 },
-  { src: '/frame-2147224026-1.png', x: 200, y: 0, w: 180 },
-  { src: '/frame-2147224026.png', x: 400, y: 0, w: 180 },
-  { src: '/frame-2147224029.png', x: 600, y: 0, w: 260 },
-  { src: '/frame-2147224030.png', x: 880, y: 0, w: 220 },
-  { src: '/frame-2147224034.png', x: 1120, y: 0, w: 200 },
-  { src: '/frame-2147224037.png', x: 1340, y: 0, w: 260 },
-
-  // Row 2 (middle-left, leaving center gap)
-  { src: '/frame-2147224030-1.png', x: 0, y: 300, w: 220 },
-  { src: '/frame-2147224031.png', x: 240, y: 280, w: 200 },
-  { src: '/frame-2147224031-1.png', x: 0, y: 520, w: 180 },
-
-  // Row 2 (middle-right)
-  { src: '/frame-2147224038.png', x: 1060, y: 280, w: 220 },
-  { src: '/frame-2147224040.png', x: 1300, y: 300, w: 200 },
-  { src: '/frame-2147224032.png', x: 1100, y: 520, w: 200 },
-
-  // Row 3 (bottom)
-  { src: '/frame-2147224032-1.png', x: 0, y: 720, w: 220 },
-  { src: '/frame-2147224036.png', x: 240, y: 700, w: 200 },
-  { src: '/frame-2147224045.png', x: 460, y: 720, w: 200 },
-  { src: '/frame-2147224046.png', x: 680, y: 700, w: 200 },
-  { src: '/frame-2147224047.png', x: 900, y: 720, w: 220 },
-  { src: '/frame-2147224048.png', x: 1140, y: 700, w: 200 },
-  { src: '/frame-2147224283.png', x: 1360, y: 720, w: 240 },
+const PLAYGROUND_IMAGES = [
+  '/frame-2147224024.png',
+  '/frame-2147224026-1.png',
+  '/frame-2147224026.png',
+  '/frame-2147224029.png',
+  '/frame-2147224030-1.png',
+  '/frame-2147224030.png',
+  '/frame-2147224031-1.png',
+  '/frame-2147224031.png',
+  '/frame-2147224032-1.png',
+  '/frame-2147224032.png',
+  '/frame-2147224034.png',
+  '/frame-2147224036.png',
+  '/frame-2147224037.png',
+  '/frame-2147224038.png',
+  '/frame-2147224040.png',
+  '/frame-2147224045.png',
+  '/frame-2147224046.png',
+  '/frame-2147224047.png',
+  '/frame-2147224048.png',
+  '/frame-2147224283.png',
 ];
 
-function DraggableImage({ src, x, y, w, transform }) {
+// Deterministic random scatter positions — spread wide, varied sizes and rotations
+function generatePositions(count) {
+  const positions = [];
+  const cols = 5;
+  const colWidth = 340;
+  const rowHeight = 320;
+
+  for (let i = 0; i < count; i++) {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    // Add some pseudo-random offset based on index
+    const seed = (i * 137 + 73) % 100;
+    const offsetX = (seed % 60) - 30;
+    const offsetY = ((seed * 3) % 80) - 40;
+    const rotate = ((seed % 11) - 5) * 1.5;
+    const width = 200 + (seed % 80);
+
+    positions.push({
+      x: col * colWidth + offsetX + 50,
+      y: 2200 + row * rowHeight + offsetY,
+      width,
+      rotate,
+    });
+  }
+  return positions;
+}
+
+const POSITIONS = generatePositions(PLAYGROUND_IMAGES.length);
+
+function DraggableImage({ src, x, y, w, rotate, transform }) {
   const [pos, setPos] = useState({ x, y });
   const [dragging, setDragging] = useState(false);
   const dragStart = useRef(null);
@@ -80,68 +100,34 @@ function DraggableImage({ src, x, y, w, transform }) {
         left: pos.x,
         top: pos.y,
         width: w,
-        borderRadius: 0,
+        borderRadius: 8,
+        transform: `rotate(${rotate}deg)`,
         cursor: dragging ? 'grabbing' : 'grab',
         userSelect: 'none',
         boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-        transition: dragging ? 'none' : 'box-shadow 0.2s',
       }}
     />
   );
 }
 
 export default function PlaygroundSection({ transform }) {
-  const startX = 100;
-  const startY = 1680;
-
   return (
     <div style={{
       position: 'absolute',
-      left: startX,
-      top: startY,
-      width: 1620,
-      height: 1000,
+      left: 0,
+      top: 0,
+      width: 2000,
+      height: 3000,
+      pointerEvents: 'auto',
     }}>
-      {/* Center text */}
-      <div style={{
-        position: 'absolute',
-        left: '50%',
-        top: '46%',
-        transform: 'translate(-50%, -50%)',
-        textAlign: 'center',
-        pointerEvents: 'none',
-        zIndex: 0,
-      }}>
-        <div style={{
-          fontSize: 42,
-          fontWeight: 700,
-          color: 'var(--figma-text)',
-          fontFamily: "'Figtree', sans-serif",
-          letterSpacing: '-0.03em',
-          lineHeight: 1.1,
-        }}>
-          Design
-        </div>
-        <div style={{
-          fontSize: 42,
-          fontWeight: 700,
-          color: 'var(--figma-text)',
-          fontFamily: "'Figtree', sans-serif",
-          letterSpacing: '-0.03em',
-          lineHeight: 1.1,
-        }}>
-          Playground
-        </div>
-      </div>
-
-      {/* Images */}
-      {PLAYGROUND_ITEMS.map((item, i) => (
+      {PLAYGROUND_IMAGES.map((src, i) => (
         <DraggableImage
           key={i}
-          src={item.src}
-          x={item.x}
-          y={item.y}
-          w={item.w}
+          src={src}
+          x={POSITIONS[i].x}
+          y={POSITIONS[i].y}
+          w={POSITIONS[i].width}
+          rotate={POSITIONS[i].rotate}
           transform={transform}
         />
       ))}
