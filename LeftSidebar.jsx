@@ -78,7 +78,6 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
         <div style={{ marginBottom: 2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--figma-text)' }}>Piyush Jain</span>
-            {icons.chevronDown(12)}
           </div>
           <span style={{ fontSize: 14, color: 'var(--figma-text-secondary)', marginTop: 2, display: 'block' }}>Portfolio</span>
         </div>

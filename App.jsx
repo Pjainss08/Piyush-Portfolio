@@ -95,7 +95,7 @@ export default function App() {
   const handlePageClick = useCallback((page) => {
     setActivePage(page.id);
     setSelectedCard(null);
-    const scales = { about: 0.7, work: 0.5, playground: 0.45, builds: 0.5 };
+    const scales = { about: 0.7, work: 0.5, playground: 0.5, builds: 0.5 };
     panTo(page.x, page.y, scales[page.id] || 0.7);
   }, [panTo]);
 

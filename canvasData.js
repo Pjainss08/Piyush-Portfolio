@@ -1,7 +1,7 @@
 export const PAGES = [
   { id: 'about', label: 'About', x: 620, y: 300 },
   { id: 'work', label: 'Work', x: 2860, y: 500 },
-  { id: 'playground', label: 'Playground', x: 850, y: 2500 },
+  { id: 'playground', label: 'Playground', x: 900, y: 3000 },
   { id: 'builds', label: 'Builds', x: 2660, y: 2100 },
 ];
 

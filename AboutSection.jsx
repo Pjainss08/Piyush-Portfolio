@@ -10,6 +10,7 @@ const INITIAL_ITEMS = [
   { id: 'book', src: '/book-show-your-work.png', x: 950, y: 30, width: 280, rotate: 5, zIndex: 1 },
   { id: 'spiderman', src: '/sticker-spiderman.png', x: 280, y: 400, width: 180, rotate: -2, zIndex: 1 },
   { id: 'king', src: '/sticker-king.png', x: 800, y: 180, width: 180, rotate: -2, zIndex: 2 },
+  { id: 'pantone', src: '/pantone.png', x: 980, y: 380, width: 140, rotate: -4, zIndex: 1, sticker: true },
 ];
 
 function DraggableItem({ item, onUpdate, transform }) {
@@ -50,6 +51,35 @@ function DraggableItem({ item, onUpdate, transform }) {
   }, [item, onUpdate, transform.scale]);
 
   const isDraggable = item.draggable !== false;
+
+  if (item.sticker) {
+    return (
+      <div
+        data-card
+        onMouseDown={handleMouseDown}
+        style={{
+          position: 'absolute',
+          left: item.x,
+          top: item.y,
+          width: item.width,
+          transform: `rotate(${item.rotate}deg)`,
+          filter: 'drop-shadow(4px 6px 14px rgba(0,0,0,0.16))',
+          pointerEvents: isDraggable ? 'auto' : 'none',
+          cursor: isDraggable ? (dragging ? 'grabbing' : 'grab') : 'default',
+          zIndex: item.zIndex,
+          userSelect: 'none',
+          transition: dragging ? 'none' : 'filter 0.2s',
+          background: '#fff',
+          borderRadius: 12,
+          padding: 4,
+          border: '1px solid #eee',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        }}
+      >
+        <img src={item.src} alt="" draggable={false} style={{ width: '100%', borderRadius: 8, display: 'block' }} />
+      </div>
+    );
+  }
 
   return (
     <img
