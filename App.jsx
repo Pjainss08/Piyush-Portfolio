@@ -14,6 +14,33 @@ export default function App() {
   const [shapeType, setShapeType] = useState('rectangle');
   const [stickyColor, setStickyColor] = useState('yellow');
   const [canvasItems, setCanvasItems] = useState([]);
+  const [isDark, setIsDark] = useState(false);
+
+  // Apply theme to CSS variables
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDark) {
+      root.style.setProperty('--figma-bg', '#1e1e1e');
+      root.style.setProperty('--figma-surface', '#2c2c2c');
+      root.style.setProperty('--figma-surface-hover', '#363636');
+      root.style.setProperty('--figma-border', '#3d3d3d');
+      root.style.setProperty('--figma-text', '#ffffff');
+      root.style.setProperty('--figma-text-secondary', '#999999');
+      root.style.setProperty('--figma-text-tertiary', '#666666');
+      root.style.setProperty('--figma-blue-bg', 'rgba(13, 153, 255, 0.15)');
+      setCanvasBg('#1e1e1e');
+    } else {
+      root.style.setProperty('--figma-bg', '#f5f5f5');
+      root.style.setProperty('--figma-surface', '#ffffff');
+      root.style.setProperty('--figma-surface-hover', '#f0f0f0');
+      root.style.setProperty('--figma-border', '#e0e0e0');
+      root.style.setProperty('--figma-text', '#1e1e1e');
+      root.style.setProperty('--figma-text-secondary', '#666666');
+      root.style.setProperty('--figma-text-tertiary', '#999999');
+      root.style.setProperty('--figma-blue-bg', 'rgba(13, 153, 255, 0.1)');
+      setCanvasBg('#F2F2F2');
+    }
+  }, [isDark]);
 
   // Pan to About section on initial load
   useEffect(() => {
@@ -68,7 +95,8 @@ export default function App() {
   const handlePageClick = useCallback((page) => {
     setActivePage(page.id);
     setSelectedCard(null);
-    panTo(page.x, page.y);
+    const scales = { about: 0.7, work: 0.5, playground: 0.45, builds: 0.5 };
+    panTo(page.x, page.y, scales[page.id] || 0.7);
   }, [panTo]);
 
   const handleCardClick = useCallback((project) => {
@@ -157,6 +185,8 @@ export default function App() {
           selectedCard={selectedCard}
           canvasBg={canvasBg}
           onCanvasBgChange={setCanvasBg}
+          isDark={isDark}
+          onToggleTheme={() => setIsDark(!isDark)}
         />
       </div>
     </div>

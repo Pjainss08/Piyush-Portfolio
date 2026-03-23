@@ -1,8 +1,9 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import ProjectCard from './ProjectCard.jsx';
 import AboutSection from './AboutSection.jsx';
 import PlaygroundSection from './PlaygroundSection.jsx';
-import { PAGES, PROJECTS } from './canvasData.js';
+import WorkSection from './WorkSection.jsx';
+import BuildsSection from './BuildsSection.jsx';
+import { PAGES } from './canvasData.js';
 
 const STICKY_COLORS = [
   { id: 'yellow', bg: '#FEFF9C', fold: '#E6E78C', shadow: 'rgba(200,180,0,0.2)' },
@@ -454,35 +455,19 @@ export default function Canvas({
           transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
         }}
       >
-        {/* Page region labels (skip About — handled by collage) */}
-        {PAGES.filter(p => p.id !== 'about' && p.id !== 'playground').map(page => (
-          <div
-            key={page.id}
-            style={{
-              position: 'absolute', left: page.x, top: page.y - 40,
-              fontSize: 14, fontWeight: 600, color: '#999',
-              letterSpacing: '0.02em', pointerEvents: 'none',
-            }}
-          >
-            {page.label}
-          </div>
-        ))}
+        {/* Page region labels removed — sections handle their own rendering */}
 
         {/* About Section collage */}
         <AboutSection transform={transform} />
 
-        {/* Playground Section collage */}
-        <PlaygroundSection />
+        {/* Work Section */}
+        <WorkSection onSelectCard={onSelectCard} />
 
-        {/* Project cards (skip about region — handled by AboutSection) */}
-        {PROJECTS.filter(p => p.page !== 'about' && p.page !== 'playground').map(project => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            isSelected={selectedCard === project.id}
-            onSelect={onSelectCard}
-          />
-        ))}
+        {/* Playground Section collage */}
+        <PlaygroundSection transform={transform} />
+
+        {/* Builds Section */}
+        <BuildsSection onSelectCard={onSelectCard} />
 
         {/* User-placed items */}
         {canvasItems.map(item => {

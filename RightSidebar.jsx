@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { PROJECTS, SOCIAL_LINKS } from './canvasData.js';
+import { WORK_PROJECTS } from './WorkSection.jsx';
+import { BUILDS_PROJECTS } from './BuildsSection.jsx';
 
 const ArrowUpRight = ({ size = 14 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -7,7 +9,7 @@ const ArrowUpRight = ({ size = 14 }) => (
   </svg>
 );
 
-export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange }) {
+export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange, isDark, onToggleTheme }) {
   const card = selectedCard ? PROJECTS.find(p => p.id === selectedCard) : null;
 
   return (
@@ -38,23 +40,43 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange 
           <img src="/pj-avatar.jpeg" alt="PJ" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
 
-        {/* Share button */}
-        <button style={{
-          background: '#0d99ff',
-          color: '#fff',
-          border: 'none',
-          borderRadius: 6,
-          padding: '6px 16px',
-          fontSize: 12,
-          fontWeight: 600,
-          cursor: 'pointer',
-          fontFamily: 'Figtree, sans-serif',
-        }}>
-          Share
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Theme icon */}
+          <div
+            onClick={onToggleTheme}
+            style={{ cursor: 'pointer', display: 'flex', color: 'var(--figma-text-secondary)' }}
+            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDark ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+          </div>
+
+          {/* Share button */}
+          <button style={{
+            background: '#0d99ff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 6,
+            padding: '6px 16px',
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontFamily: 'Figtree, sans-serif',
+          }}>
+            Share
+          </button>
+        </div>
       </div>
 
-      {/* Design tab only */}
+      {/* Design tab */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -190,7 +212,76 @@ function PageProperties({ canvasBg = '#F2F2F2', onCanvasBgChange = () => {} }) {
   );
 }
 
+const TAG_STYLES = {
+  'Rebrand': { color: '#009EFF', bg: 'rgba(0, 158, 255, 0.10)' },
+  'Visual Design': { color: '#FF5100', bg: 'rgba(255, 81, 0, 0.10)' },
+  'Product Design': { color: '#00B25D', bg: 'rgba(0, 178, 93, 0.10)' },
+  'Website Design': { color: '#8253FF', bg: 'rgba(130, 83, 255, 0.10)' },
+  'Mini App Design': { color: '#FF2ADF', bg: 'rgba(255, 42, 223, 0.10)' },
+};
+
 function CardProperties({ card }) {
+  // Check if it's a work or builds project
+  const workProject = WORK_PROJECTS.find(p => card.id === `work-${p.id}`) || BUILDS_PROJECTS.find(p => card.id === `build-${p.id}`);
+
+  if (workProject) {
+    return (
+      <>
+        {/* Project image */}
+        <div style={{ padding: '12px' }}>
+          <img
+            src={workProject.image}
+            alt={workProject.title}
+            style={{ width: '100%', borderRadius: 8 }}
+          />
+        </div>
+        <div style={{ height: 1, background: 'var(--figma-border)' }} />
+
+        {/* Title */}
+        <div style={{ padding: '12px 12px 4px', fontSize: 16, fontWeight: 600, color: 'var(--figma-text)' }}>
+          {workProject.title}
+        </div>
+
+        {/* Description */}
+        <div style={{ padding: '0 12px 8px', fontSize: 13, color: 'var(--figma-text-secondary)', lineHeight: 1.5 }}>
+          {workProject.description}
+        </div>
+
+        {/* Tags */}
+        <div style={{ padding: '4px 12px 12px', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {workProject.tags.map((tag, i) => {
+            const style = TAG_STYLES[tag] || { color: '#666', bg: 'rgba(0,0,0,0.05)' };
+            return (
+              <span key={i} style={{
+                padding: '3px 8px', fontSize: 12, fontWeight: 500,
+                color: style.color, background: style.bg, borderRadius: 6,
+              }}>
+                {tag}
+              </span>
+            );
+          })}
+        </div>
+
+        {workProject.url && (
+          <>
+            <div style={{ height: 1, background: 'var(--figma-border)' }} />
+            <a
+              href={workProject.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: 'none' }}
+            >
+              <div className="prop-row" style={{ justifyContent: 'space-between', cursor: 'pointer', padding: '10px 12px' }}>
+                <span style={{ color: '#0d99ff', fontSize: 13, fontWeight: 500 }}>Visit Project</span>
+                <ArrowUpRight size={14} />
+              </div>
+            </a>
+          </>
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       <div style={{ padding: '12px', fontSize: 15, fontWeight: 600, color: 'var(--figma-text)' }}>

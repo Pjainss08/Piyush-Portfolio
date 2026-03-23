@@ -109,7 +109,7 @@ export default function AboutSection({ transform }) {
         fontSize: 24,
         fontFamily: "'Figtree', sans-serif",
         fontWeight: 400,
-        color: '#333',
+        color: 'var(--figma-text)',
         lineHeight: 1.5,
         letterSpacing: '-0.02em',
         pointerEvents: 'none',
