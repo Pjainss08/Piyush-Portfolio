@@ -144,7 +144,7 @@ export default function AboutSection({ transform }) {
         letterSpacing: '-0.02em',
         pointerEvents: 'none',
       }}>
-        hello, i'm piyush jain a designer who loves to build & explore new things. currently exploring ai and products.
+        Hello I'm Piyush Jain, brand & product designer, builder, and someone who loves making things pretty. Mostly working around AI and new ideas these days
       </div>
     </div>
   );
