@@ -98,14 +98,15 @@ export default function MobileAbout() {
       height: '100%',
       display: 'flex',
       flexDirection: 'column',
+      justifyContent: 'center',
       overflow: 'hidden',
     }}>
       {/* Sticker collage area */}
       <div style={{
         position: 'relative',
         width: '100%',
-        flex: 1,
-        overflow: 'hidden',
+        flex: '0 0 55%',
+        overflow: 'visible',
       }}>
         {MOBILE_ITEMS.map(item => (
           <MobileDraggableItem key={item.id} item={item} containerWidth={containerWidth} />
