@@ -59,7 +59,9 @@ function generatePositions(count) {
 const POSITIONS = generatePositions(PLAYGROUND_IMAGES.length);
 
 export default function MobilePlayground() {
-  const { transform, containerRef, handlers } = useTouchCanvas({ x: -200, y: -200, scale: 0.3 });
+  // Center content: area is 1800x1800, mobile viewport ~375x700
+  // At scale 0.25: 1800*0.25=450px wide, need x offset to center: (375-450)/2 = -37
+  const { transform, containerRef, handlers } = useTouchCanvas({ x: -37, y: 20, scale: 0.25 });
 
   return (
     <div
@@ -81,9 +83,8 @@ export default function MobilePlayground() {
         transformOrigin: '0 0',
         transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
         willChange: 'transform',
-        width: 1,
-        height: 1,
-        overflow: 'visible',
+        width: 2000,
+        height: 2000,
       }}>
         {PLAYGROUND_IMAGES.map((src, i) => (
           <img
@@ -91,7 +92,7 @@ export default function MobilePlayground() {
             src={src}
             alt=""
             draggable={false}
-            loading="lazy"
+            loading="eager"
             style={{
               position: 'absolute',
               left: POSITIONS[i].x,

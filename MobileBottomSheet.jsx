@@ -98,19 +98,16 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
               </div>
             ))}
 
-            {/* Theme toggle */}
-            <div
-              onClick={onToggleTheme}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '14px 0', cursor: 'pointer',
-                borderBottom: '1px solid var(--figma-border)',
-              }}
-            >
-              <span style={{ fontSize: 18, color: 'var(--figma-text)' }}>
-                {isDark ? 'Light Mode' : 'Dark Mode'}
-              </span>
-              <span style={{ color: 'var(--figma-text-secondary)' }}>
+            {/* Bottom row: social icons + theme toggle */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 28,
+              paddingTop: 20,
+            }}>
+              {/* Theme toggle icon */}
+              <div
+                onClick={onToggleTheme}
+                style={{ color: 'var(--figma-text-secondary)', cursor: 'pointer', display: 'flex' }}
+              >
                 {isDark ? (
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="4" />
@@ -121,14 +118,10 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                   </svg>
                 )}
-              </span>
-            </div>
+              </div>
 
-            {/* Social icons row */}
-            <div style={{
-              display: 'flex', justifyContent: 'center', gap: 32,
-              paddingTop: 20,
-            }}>
+              {/* Divider */}
+              <div style={{ width: 1, height: 20, background: 'var(--figma-border)' }} />
               {SOCIAL_LINKS.map((link, i) => (
                 <div
                   key={i}

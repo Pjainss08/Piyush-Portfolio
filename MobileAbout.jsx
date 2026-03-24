@@ -1,20 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 
+// Positions tuned for ~375px mobile width, centered collage
 const MOBILE_ITEMS = [
-  { id: 'notebook', src: '/notebook.png', x: 0, y: 60, width: 160, rotate: -3, zIndex: 0 },
-  { id: 'srk', src: '/sticker-srk.png', x: 110, y: 0, width: 90, rotate: -5, zIndex: 2, sticker: true },
-  { id: 'polaroid-me', src: '/polaroid-me.png', x: 130, y: 50, width: 160, rotate: -6, zIndex: 3 },
-  { id: 'vinyl', src: '/vinyl-record.png', x: 250, y: 10, width: 80, rotate: 8, zIndex: 4 },
-  { id: 'polaroid-mt', src: '/polaroid-mountain.png', x: 270, y: 40, width: 150, rotate: 4, zIndex: 3 },
-  { id: 'blob', src: '/sticker-blob.png', x: 420, y: 0, width: 50, rotate: 6, zIndex: 5, sticker: true },
-  { id: 'book', src: '/book-show-your-work.png', x: 420, y: 30, width: 140, rotate: 5, zIndex: 2 },
-  { id: 'spiderman', src: '/sticker-spiderman.png', x: 140, y: 280, width: 100, rotate: -2, zIndex: 5, sticker: true },
-  { id: 'king', src: '/sticker-king.png', x: 400, y: 130, width: 100, rotate: -2, zIndex: 4, sticker: true },
-  { id: 'pantone', src: '/pantone.png', x: 470, y: 260, width: 80, rotate: -4, zIndex: 5, sticker: true },
+  { id: 'notebook', src: '/notebook.png', x: -20, y: 80, width: 180, rotate: -3, zIndex: 0 },
+  { id: 'srk', src: '/sticker-srk.png', x: 120, y: 10, width: 100, rotate: -5, zIndex: 2 },
+  { id: 'polaroid-me', src: '/polaroid-me.png', x: 160, y: 70, width: 180, rotate: -6, zIndex: 3 },
+  { id: 'vinyl', src: '/vinyl-record.png', x: 310, y: 20, width: 90, rotate: 8, zIndex: 4 },
+  { id: 'polaroid-mt', src: '/polaroid-mountain.png', x: 300, y: 80, width: 160, rotate: 4, zIndex: 3 },
+  { id: 'blob', src: '/sticker-blob.png', x: 440, y: 10, width: 55, rotate: 6, zIndex: 5 },
+  { id: 'book', src: '/book-show-your-work.png', x: 420, y: 50, width: 160, rotate: 5, zIndex: 2 },
+  { id: 'spiderman', src: '/sticker-spiderman.png', x: 30, y: 300, width: 100, rotate: -2, zIndex: 1 },
+  { id: 'king', src: '/sticker-king.png', x: 420, y: 180, width: 110, rotate: -2, zIndex: 4 },
+  { id: 'pantone', src: '/pantone.png', x: 440, y: 340, width: 90, rotate: -4, zIndex: 5, sticker: true },
 ];
 
-function MobileDraggableItem({ item, scale }) {
-  const [pos, setPos] = useState({ x: item.x * scale, y: item.y * scale });
+function MobileDraggableItem({ item, scale, offsetX }) {
+  const [pos, setPos] = useState({ x: item.x * scale + offsetX, y: item.y * scale });
   const [dragging, setDragging] = useState(false);
   const touchStart = useRef(null);
 
@@ -40,14 +41,6 @@ function MobileDraggableItem({ item, scale }) {
 
   const w = item.width * scale;
 
-  const imgStyle = {
-    width: w,
-    borderRadius: item.sticker ? 0 : 4,
-    filter: item.sticker
-      ? 'drop-shadow(1px 2px 4px rgba(0,0,0,0.1))'
-      : 'drop-shadow(2px 3px 8px rgba(0,0,0,0.1))',
-  };
-
   if (item.sticker) {
     return (
       <div
@@ -67,7 +60,7 @@ function MobileDraggableItem({ item, scale }) {
           border: '1px solid #eee',
           boxShadow: '1px 2px 6px rgba(0,0,0,0.08)',
         }}>
-          <img src={item.src} alt="" draggable={false} style={{ ...imgStyle, borderRadius: 6 }} />
+          <img src={item.src} alt="" draggable={false} style={{ width: w, borderRadius: 6 }} />
         </div>
       </div>
     );
@@ -83,7 +76,8 @@ function MobileDraggableItem({ item, scale }) {
       onTouchEnd={handleTouchEnd}
       style={{
         position: 'absolute', left: pos.x, top: pos.y,
-        ...imgStyle,
+        width: w, borderRadius: 4,
+        filter: 'drop-shadow(2px 3px 8px rgba(0,0,0,0.1))',
         transform: `rotate(${item.rotate}deg)${dragging ? ' scale(1.05)' : ''}`,
         zIndex: dragging ? 999 : item.zIndex,
         transition: dragging ? 'none' : 'transform 0.2s',
@@ -95,28 +89,29 @@ function MobileDraggableItem({ item, scale }) {
 
 export default function MobileAbout() {
   const [scale, setScale] = useState(1);
-  const containerRef = useRef(null);
+  const [offsetX, setOffsetX] = useState(0);
 
   useEffect(() => {
     const w = window.innerWidth;
-    // Scale items to fit mobile width (desktop was ~600px wide content)
-    setScale(Math.min(w / 600, 1));
+    // Content designed for ~580px width, scale to fit with padding
+    const s = Math.min((w - 32) / 580, 1);
+    setScale(s);
+    // Center the collage horizontally
+    const contentWidth = 580 * s;
+    setOffsetX((w - contentWidth) / 2);
   }, []);
 
   return (
-    <div style={{ padding: '24px 16px', minHeight: '100%' }}>
+    <div style={{ padding: '16px 0', minHeight: '100%' }}>
       {/* Sticker collage area */}
-      <div
-        ref={containerRef}
-        style={{
-          position: 'relative',
-          width: '100%',
-          height: 420 * scale,
-          marginBottom: 24,
-        }}
-      >
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        height: 480 * scale,
+        marginBottom: 16,
+      }}>
         {MOBILE_ITEMS.map(item => (
-          <MobileDraggableItem key={item.id} item={item} scale={scale} />
+          <MobileDraggableItem key={item.id} item={item} scale={scale} offsetX={offsetX} />
         ))}
       </div>
 
@@ -128,8 +123,7 @@ export default function MobileAbout() {
         lineHeight: 1.6,
         fontFamily: "'Figtree', sans-serif",
         letterSpacing: '-0.03em',
-        maxWidth: 340,
-        margin: '0 auto',
+        padding: '0 32px',
         textAlign: 'center',
       }}>
         hello, i'm piyush jain a designer who loves to build & explore new things. currently exploring ai and products.
