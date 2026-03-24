@@ -100,6 +100,17 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange,
       <div style={{ flex: 1, overflow: 'auto' }}>
         {card ? <CardProperties card={card} /> : <PageProperties canvasBg={canvasBg} onCanvasBgChange={onCanvasBgChange} />}
       </div>
+
+      {/* Footer */}
+      <div style={{
+        padding: '12px',
+        borderTop: '1px solid var(--figma-border)',
+        fontSize: 14,
+        color: 'var(--figma-text-secondary)',
+        textAlign: 'center',
+      }}>
+        Made with ❤️ by Piyush Jain and Claude
+      </div>
     </div>
   );
 }
