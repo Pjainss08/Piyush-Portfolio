@@ -2,30 +2,27 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PAGES, SOCIAL_LINKS } from './canvasData.js';
 
+// Pikaicons stroke SVG paths
 const socialIcons = {
   'X (Twitter)': (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 4l6.5 8L4 20h2l5.5-6.5L16 20h4l-6.5-8L20 4h-2l-5.5 6.5L8 4H4z" />
+      <path d="m18.667 4-5.527 6.316M4.667 20l5.895-6.737m2.578-2.947L9.304 4.9c-.233-.33-.35-.494-.5-.613a1.3 1.3 0 0 0-.45-.233C8.169 4 7.967 4 7.564 4H6.063c-.667 0-1 0-1.18.138a.67.67 0 0 0-.26.502c-.009.227.184.499.57 1.043l5.369 7.58m2.578-2.947 5.668 8c.385.545.578.817.569 1.044a.67.67 0 0 1-.26.502c-.18.138-.513.138-1.18.138h-1.5c-.404 0-.606 0-.79-.054a1.3 1.3 0 0 1-.45-.233c-.151-.119-.268-.284-.501-.613l-4.134-5.837" />
     </svg>
   ),
   'LinkedIn': (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect x="2" y="9" width="4" height="12" />
-      <circle cx="4" cy="4" r="2" />
+      <path d="M17 17v-3.5a2.5 2.5 0 0 0-5 0m0 0V17m0-3.5v-3m-4 0V17M8 7v.01" />
+      <path d="M3 9.4c0-2.24 0-3.36.436-4.216a4 4 0 0 1 1.748-1.748C6.04 3 7.16 3 9.4 3h5.2c2.24 0 3.36 0 4.216.436a4 4 0 0 1 1.748 1.748C21 6.04 21 7.16 21 9.4v5.2c0 2.24 0 3.36-.436 4.216a4 4 0 0 1-1.748 1.748C17.96 21 16.84 21 14.6 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6z" />
     </svg>
   ),
   'Instagram': (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="2" width="20" height="20" rx="5" />
-      <circle cx="12" cy="12" r="5" />
-      <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" />
+      <path d="M17 7h.01M3 12c0-2.514 0-3.77.354-4.78a6.3 6.3 0 0 1 3.865-3.866C8.23 3 9.486 3 12 3s3.77 0 4.78.354a6.3 6.3 0 0 1 3.866 3.865C21 8.23 21 9.486 21 12s0 3.77-.354 4.78a6.3 6.3 0 0 1-3.865 3.866C15.77 21 14.514 21 12 21s-3.77 0-4.78-.354a6.3 6.3 0 0 1-3.866-3.865C3 15.77 3 14.514 3 12Zm12.778-.56a3.819 3.819 0 1 1-7.555 1.12 3.819 3.819 0 0 1 7.554-1.12Z" />
     </svg>
   ),
   'Email': (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="4" width="20" height="16" rx="3" />
-      <path d="M22 7l-10 6L2 7" />
+      <path d="m21.803 7.762-5.508 3.505c-1.557.99-2.335 1.486-3.171 1.678a5 5 0 0 1-2.248 0c-.836-.192-1.614-.688-3.171-1.678L2.197 7.762m19.606 0C22 8.722 22 10.006 22 12c0 2.8 0 4.2-.545 5.27a5 5 0 0 1-2.185 2.185C18.2 20 16.8 20 14 20h-4c-2.8 0-4.2 0-5.27-.545a5 5 0 0 1-2.185-2.185C2 16.2 2 14.8 2 12c0-1.994 0-3.278.197-4.238m19.606 0a4 4 0 0 0-.348-1.032 5 5 0 0 0-2.185-2.185C18.2 4 16.8 4 14 4h-4c-2.8 0-4.2 0-5.27.545A5 5 0 0 0 2.545 6.73a4 4 0 0 0-.348 1.032" />
     </svg>
   ),
 };
@@ -73,7 +70,7 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
               <div style={{ width: 40, height: 4, borderRadius: 2, background: 'var(--figma-border)' }} />
             </div>
 
-            {/* Page nav items */}
+            {/* Page nav items — no dividers */}
             {PAGES.map(page => (
               <div
                 key={page.id}
@@ -85,7 +82,7 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
               >
                 <span style={{
                   fontSize: 18, fontWeight: activePage === page.id ? 600 : 400,
-                  color: 'var(--figma-text)',
+                  color: activePage === page.id ? 'var(--figma-text)' : 'var(--figma-text-secondary)',
                 }}>
                   {page.label}
                 </span>
@@ -97,30 +94,44 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
               </div>
             ))}
 
-            {/* Bottom row: social icons + theme toggle */}
+            {/* Dark Mode row with toggle */}
+            <div
+              onClick={onToggleTheme}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '14px 0', cursor: 'pointer',
+              }}
+            >
+              <span style={{
+                fontSize: 18, fontWeight: 400,
+                color: 'var(--figma-text-secondary)',
+              }}>
+                Dark Mode
+              </span>
+              {/* Toggle switch */}
+              <div style={{
+                width: 44, height: 26, borderRadius: 13,
+                background: isDark ? '#0d99ff' : '#ccc',
+                position: 'relative',
+                transition: 'background 0.2s',
+              }}>
+                <div style={{
+                  width: 22, height: 22, borderRadius: '50%',
+                  background: '#fff',
+                  position: 'absolute',
+                  top: 2,
+                  left: isDark ? 20 : 2,
+                  transition: 'left 0.2s',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                }} />
+              </div>
+            </div>
+
+            {/* Social icons row at bottom */}
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 28,
-              paddingTop: 20,
+              paddingTop: 16,
             }}>
-              {/* Theme toggle icon */}
-              <div
-                onClick={onToggleTheme}
-                style={{ color: 'var(--figma-text-secondary)', cursor: 'pointer', display: 'flex' }}
-              >
-                {isDark ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="4" />
-                    <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-                  </svg>
-                ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                  </svg>
-                )}
-              </div>
-
-              {/* Divider */}
-              <div style={{ width: 1, height: 20, background: 'var(--figma-border)' }} />
               {SOCIAL_LINKS.map((link, i) => (
                 <div
                   key={i}
@@ -136,6 +147,7 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
                   style={{
                     color: emailCopied && link.email ? '#0ACF83' : 'var(--figma-text-secondary)',
                     cursor: 'pointer', transition: 'color 0.2s',
+                    display: 'flex',
                   }}
                 >
                   {socialIcons[link.label]}
