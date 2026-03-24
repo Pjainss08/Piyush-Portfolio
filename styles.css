@@ -174,3 +174,9 @@ html, body, #root {
   color: var(--figma-text);
   border-bottom-color: var(--figma-blue);
 }
+
+@media (max-width: 768px) {
+  html, body, #root {
+    overflow: auto;
+  }
+}
