@@ -61,12 +61,11 @@ const POSITIONS = generatePositions(PLAYGROUND_IMAGES.length);
 export default function MobilePlayground() {
   // Center content: area is 1800x1800, mobile viewport ~375x700
   // At scale 0.25: 1800*0.25=450px wide, need x offset to center: (375-450)/2 = -37
-  const { transform, containerRef, handlers } = useTouchCanvas({ x: -37, y: 20, scale: 0.25 });
+  const { transform, containerRef } = useTouchCanvas({ x: -37, y: 20, scale: 0.25 });
 
   return (
     <div
       ref={containerRef}
-      {...handlers}
       style={{
         position: 'relative',
         width: '100%',

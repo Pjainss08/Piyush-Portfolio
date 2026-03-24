@@ -81,7 +81,6 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   padding: '14px 0', cursor: 'pointer',
-                  borderBottom: '1px solid var(--figma-border)',
                 }}
               >
                 <span style={{
