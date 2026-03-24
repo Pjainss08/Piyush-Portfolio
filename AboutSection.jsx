@@ -1,16 +1,16 @@
 import React, { useState, useRef, useCallback } from 'react';
 
 const INITIAL_ITEMS = [
-  { id: 'notebook', src: '/notebook.png', x: -40, y: 80, width: 320, rotate: -3, zIndex: 0 },
-  { id: 'srk', src: '/sticker-srk.png', x: 220, y: -20, width: 170, rotate: -5, zIndex: 3 },
-  { id: 'polaroid-me', src: '/polaroid-me.png', x: 320, y: 60, width: 300, rotate: -6, zIndex: 2 },
-  { id: 'vinyl', src: '/vinyl-record.png', x: 490, y: -30, width: 140, rotate: 8, zIndex: 5 },
-  { id: 'polaroid-mountain', src: '/polaroid-mountain.png', x: 560, y: 40, width: 300, rotate: 4, zIndex: 1 },
-  { id: 'blob', src: '/sticker-blob.png', x: 820, y: -20, width: 90, rotate: 6, zIndex: 3 },
-  { id: 'book', src: '/book-show-your-work.png', x: 950, y: 30, width: 280, rotate: 5, zIndex: 1 },
-  { id: 'spiderman', src: '/sticker-spiderman.png', x: 280, y: 400, width: 180, rotate: -2, zIndex: 1 },
-  { id: 'king', src: '/sticker-king.png', x: 800, y: 180, width: 180, rotate: -2, zIndex: 2 },
-  { id: 'pantone', src: '/pantone.png', x: 980, y: 380, width: 140, rotate: -4, zIndex: 1, sticker: true },
+  { id: 'notebook', src: '/notebook.webp', x: -40, y: 80, width: 320, rotate: -3, zIndex: 0 },
+  { id: 'srk', src: '/sticker-srk.webp', x: 220, y: -20, width: 170, rotate: -5, zIndex: 3 },
+  { id: 'polaroid-me', src: '/polaroid-me.webp', x: 320, y: 60, width: 300, rotate: -6, zIndex: 2 },
+  { id: 'vinyl', src: '/vinyl-record.webp', x: 490, y: -30, width: 140, rotate: 8, zIndex: 5 },
+  { id: 'polaroid-mountain', src: '/polaroid-mountain.webp', x: 560, y: 40, width: 300, rotate: 4, zIndex: 1 },
+  { id: 'blob', src: '/sticker-blob.webp', x: 820, y: -20, width: 90, rotate: 6, zIndex: 3 },
+  { id: 'book', src: '/book-show-your-work.webp', x: 950, y: 30, width: 280, rotate: 5, zIndex: 1 },
+  { id: 'spiderman', src: '/sticker-spiderman.webp', x: 280, y: 400, width: 180, rotate: -2, zIndex: 1 },
+  { id: 'king', src: '/sticker-king.webp', x: 800, y: 180, width: 180, rotate: -2, zIndex: 2 },
+  { id: 'pantone', src: '/pantone.webp', x: 980, y: 380, width: 140, rotate: -4, zIndex: 1, sticker: true },
 ];
 
 function DraggableItem({ item, onUpdate, transform }) {

@@ -13,7 +13,7 @@ export default function MobileTopBar({ onMenuOpen }) {
     }}>
       {/* Avatar */}
       <div style={{ width: 36, height: 36, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
-        <img src="/pj-avatar.jpeg" alt="PJ" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <img src="/pj-avatar.webp" alt="PJ" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
 
       {/* Name */}

@@ -2,16 +2,16 @@ import React, { useState, useRef } from 'react';
 import { SOCIAL_LINKS } from './canvasData.js';
 
 const MOBILE_ITEMS = [
-  { id: 'notebook', src: '/notebook.png', x: 0, y: 15, w: 35, rotate: -3, zIndex: 0 },
-  { id: 'srk', src: '/sticker-srk.png', x: 25, y: 0, w: 20, rotate: -5, zIndex: 2 },
-  { id: 'polaroid-me', src: '/polaroid-me.png', x: 28, y: 12, w: 35, rotate: -6, zIndex: 3 },
-  { id: 'vinyl', src: '/vinyl-record.png', x: 58, y: 2, w: 18, rotate: 8, zIndex: 4 },
-  { id: 'polaroid-mt', src: '/polaroid-mountain.png', x: 55, y: 12, w: 32, rotate: 4, zIndex: 3 },
-  { id: 'blob', src: '/sticker-blob.png', x: 82, y: 0, w: 10, rotate: 6, zIndex: 5 },
-  { id: 'book', src: '/book-show-your-work.png', x: 70, y: 6, w: 28, rotate: 5, zIndex: 2 },
-  { id: 'spiderman', src: '/sticker-spiderman.png', x: 8, y: 55, w: 20, rotate: -2, zIndex: 1 },
-  { id: 'king', src: '/sticker-king.png', x: 76, y: 38, w: 22, rotate: -2, zIndex: 4 },
-  { id: 'pantone', src: '/pantone.png', x: 62, y: 50, w: 18, rotate: -4, zIndex: 5, sticker: true },
+  { id: 'notebook', src: '/notebook.webp', x: 0, y: 15, w: 35, rotate: -3, zIndex: 0 },
+  { id: 'srk', src: '/sticker-srk.webp', x: 25, y: 0, w: 20, rotate: -5, zIndex: 2 },
+  { id: 'polaroid-me', src: '/polaroid-me.webp', x: 28, y: 12, w: 35, rotate: -6, zIndex: 3 },
+  { id: 'vinyl', src: '/vinyl-record.webp', x: 58, y: 2, w: 18, rotate: 8, zIndex: 4 },
+  { id: 'polaroid-mt', src: '/polaroid-mountain.webp', x: 55, y: 12, w: 32, rotate: 4, zIndex: 3 },
+  { id: 'blob', src: '/sticker-blob.webp', x: 82, y: 0, w: 10, rotate: 6, zIndex: 5 },
+  { id: 'book', src: '/book-show-your-work.webp', x: 70, y: 6, w: 28, rotate: 5, zIndex: 2 },
+  { id: 'spiderman', src: '/sticker-spiderman.webp', x: 8, y: 55, w: 20, rotate: -2, zIndex: 1 },
+  { id: 'king', src: '/sticker-king.webp', x: 76, y: 38, w: 22, rotate: -2, zIndex: 4 },
+  { id: 'pantone', src: '/pantone.webp', x: 62, y: 50, w: 18, rotate: -4, zIndex: 5, sticker: true },
 ];
 
 // Pikaicons stroke SVG paths
