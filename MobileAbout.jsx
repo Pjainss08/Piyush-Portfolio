@@ -163,6 +163,17 @@ export default function MobileAbout() {
         </div>
       </div>
 
+      {/* Footer credit */}
+      <div style={{
+        fontSize: 12,
+        color: 'var(--figma-text-tertiary)',
+        textAlign: 'center',
+        padding: '8px 0',
+        whiteSpace: 'nowrap',
+      }}>
+        Made with ❤️ by Piyush Jain and Claude
+      </div>
+
       {/* Toast */}
       {emailCopied && (
         <div style={{
