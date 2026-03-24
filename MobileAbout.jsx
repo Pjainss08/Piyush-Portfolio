@@ -1,18 +1,17 @@
 import React, { useState, useRef } from 'react';
 
-// Positions as percentages of container width (designed for 375px, works at any width)
-// x/y are % of container width, width is % of container width
+// All positions fit within 0-100% of container width, nothing extends outside
 const MOBILE_ITEMS = [
-  { id: 'notebook', src: '/notebook.png', x: -5, y: 18, w: 38, rotate: -3, zIndex: 0 },
-  { id: 'srk', src: '/sticker-srk.png', x: 28, y: 2, w: 22, rotate: -5, zIndex: 2 },
-  { id: 'polaroid-me', src: '/polaroid-me.png', x: 30, y: 14, w: 38, rotate: -6, zIndex: 3 },
-  { id: 'vinyl', src: '/vinyl-record.png', x: 62, y: 4, w: 20, rotate: 8, zIndex: 4 },
-  { id: 'polaroid-mt', src: '/polaroid-mountain.png', x: 58, y: 14, w: 35, rotate: 4, zIndex: 3 },
-  { id: 'blob', src: '/sticker-blob.png', x: 88, y: 2, w: 12, rotate: 6, zIndex: 5 },
-  { id: 'book', src: '/book-show-your-work.png', x: 78, y: 8, w: 32, rotate: 5, zIndex: 2 },
-  { id: 'spiderman', src: '/sticker-spiderman.png', x: 10, y: 62, w: 22, rotate: -2, zIndex: 1 },
-  { id: 'king', src: '/sticker-king.png', x: 82, y: 42, w: 24, rotate: -2, zIndex: 4 },
-  { id: 'pantone', src: '/pantone.png', x: 72, y: 68, w: 20, rotate: -4, zIndex: 5, sticker: true },
+  { id: 'notebook', src: '/notebook.png', x: 0, y: 15, w: 35, rotate: -3, zIndex: 0 },
+  { id: 'srk', src: '/sticker-srk.png', x: 25, y: 0, w: 20, rotate: -5, zIndex: 2 },
+  { id: 'polaroid-me', src: '/polaroid-me.png', x: 28, y: 12, w: 35, rotate: -6, zIndex: 3 },
+  { id: 'vinyl', src: '/vinyl-record.png', x: 58, y: 2, w: 18, rotate: 8, zIndex: 4 },
+  { id: 'polaroid-mt', src: '/polaroid-mountain.png', x: 55, y: 12, w: 32, rotate: 4, zIndex: 3 },
+  { id: 'blob', src: '/sticker-blob.png', x: 82, y: 0, w: 10, rotate: 6, zIndex: 5 },
+  { id: 'book', src: '/book-show-your-work.png', x: 70, y: 6, w: 28, rotate: 5, zIndex: 2 },
+  { id: 'spiderman', src: '/sticker-spiderman.png', x: 8, y: 55, w: 20, rotate: -2, zIndex: 1 },
+  { id: 'king', src: '/sticker-king.png', x: 76, y: 38, w: 22, rotate: -2, zIndex: 4 },
+  { id: 'pantone', src: '/pantone.png', x: 68, y: 58, w: 18, rotate: -4, zIndex: 5, sticker: true },
 ];
 
 function MobileDraggableItem({ item, containerWidth }) {
@@ -94,19 +93,20 @@ export default function MobileAbout() {
   const containerWidth = typeof window !== 'undefined' ? window.innerWidth : 375;
 
   return (
-    <div style={{ minHeight: '100%' }}>
-      {/* Sticker collage area — height is 90% of width to maintain proportions */}
+    <div style={{ overflow: 'hidden' }}>
+      {/* Sticker collage area */}
       <div style={{
         position: 'relative',
         width: '100%',
-        height: containerWidth * 0.9,
+        height: containerWidth * 0.85,
+        overflow: 'hidden',
       }}>
         {MOBILE_ITEMS.map(item => (
           <MobileDraggableItem key={item.id} item={item} containerWidth={containerWidth} />
         ))}
       </div>
 
-      {/* Bio text */}
+      {/* Bio text — below stickers, no overlap */}
       <div style={{
         fontSize: Math.min(containerWidth * 0.046, 18),
         fontWeight: 400,
@@ -114,7 +114,7 @@ export default function MobileAbout() {
         lineHeight: 1.6,
         fontFamily: "'Figtree', sans-serif",
         letterSpacing: '-0.03em',
-        padding: '0 32px',
+        padding: '16px 32px 32px',
         textAlign: 'center',
       }}>
         hello, i'm piyush jain a designer who loves to build & explore new things. currently exploring ai and products.

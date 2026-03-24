@@ -71,7 +71,7 @@ export default function useTouchCanvas(initialTransform = { x: 0, y: 0, scale: 0
       } else if (touchState.current.type === 'pinch' && e.touches.length === 2) {
         const dist = getDistance(e.touches[0], e.touches[1]);
         const ratio = dist / touchState.current.startDist;
-        const newScale = clamp(touchState.current.startScale * ratio, 0.15, 2.0);
+        const newScale = clamp(touchState.current.startScale * ratio, 0.1, 1.0);
         const scaleRatio = newScale / touchState.current.startScale;
         const midX = touchState.current.midX;
         const midY = touchState.current.midY;

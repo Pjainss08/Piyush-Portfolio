@@ -48,7 +48,7 @@ function generatePositions(count) {
         bestDist = minDist; bestX = tryX; bestY = tryY;
       }
     }
-    const width = 180 + rand() * 120;
+    const width = 150 + rand() * 100;
     const rotate = (rand() - 0.5) * 16;
     placed.push({ x: bestX, y: bestY });
     positions.push({ x: bestX, y: bestY, width, rotate, zIndex: Math.floor(rand() * 10) });
