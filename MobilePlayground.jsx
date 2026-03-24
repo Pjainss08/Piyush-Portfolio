@@ -84,6 +84,7 @@ export default function MobilePlayground() {
         willChange: 'transform',
         width: 2000,
         height: 2000,
+        contain: 'layout style paint',
       }}>
         {PLAYGROUND_IMAGES.map((src, i) => (
           <img
@@ -91,7 +92,7 @@ export default function MobilePlayground() {
             src={src}
             alt=""
             draggable={false}
-            loading="eager"
+            loading="lazy"
             style={{
               position: 'absolute',
               left: POSITIONS[i].x,

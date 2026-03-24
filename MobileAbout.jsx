@@ -11,7 +11,7 @@ const MOBILE_ITEMS = [
   { id: 'book', src: '/book-show-your-work.png', x: 70, y: 6, w: 28, rotate: 5, zIndex: 2 },
   { id: 'spiderman', src: '/sticker-spiderman.png', x: 8, y: 55, w: 20, rotate: -2, zIndex: 1 },
   { id: 'king', src: '/sticker-king.png', x: 76, y: 38, w: 22, rotate: -2, zIndex: 4 },
-  { id: 'pantone', src: '/pantone.png', x: 68, y: 58, w: 18, rotate: -4, zIndex: 5, sticker: true },
+  { id: 'pantone', src: '/pantone.png', x: 65, y: 52, w: 18, rotate: -4, zIndex: 5, sticker: true },
 ];
 
 function MobileDraggableItem({ item, containerWidth }) {
@@ -98,8 +98,8 @@ export default function MobileAbout() {
       <div style={{
         position: 'relative',
         width: '100%',
-        height: containerWidth * 0.85,
-        overflow: 'hidden',
+        height: containerWidth * 0.95,
+        overflow: 'visible',
       }}>
         {MOBILE_ITEMS.map(item => (
           <MobileDraggableItem key={item.id} item={item} containerWidth={containerWidth} />
