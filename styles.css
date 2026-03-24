@@ -175,6 +175,11 @@ html, body, #root {
   border-bottom-color: var(--figma-blue);
 }
 
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 @media (max-width: 768px) {
   html, body, #root {
     overflow: auto;

@@ -162,6 +162,28 @@ export default function MobileAbout() {
           ))}
         </div>
       </div>
+
+      {/* Toast */}
+      {emailCopied && (
+        <div style={{
+          position: 'fixed',
+          bottom: 40,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#1e1e1e',
+          color: '#fff',
+          padding: '10px 24px',
+          borderRadius: 100,
+          fontSize: 14,
+          fontWeight: 500,
+          fontFamily: "'Figtree', sans-serif",
+          boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+          zIndex: 1000,
+          animation: 'fadeInUp 0.2s ease',
+        }}>
+          Email copied ✓
+        </div>
+      )}
     </div>
   );
 }
