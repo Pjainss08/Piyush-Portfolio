@@ -30,7 +30,7 @@ export default function MobileShell({ isDark, onToggleTheme }) {
       {/* Content area */}
       <div style={{
         flex: 1,
-        overflow: isPlayground ? 'hidden' : 'auto',
+        overflow: (isPlayground || activePage === 'about') ? 'hidden' : 'auto',
         WebkitOverflowScrolling: 'touch',
         background: isPlayground ? 'var(--figma-canvas, #f5f5f5)' : 'var(--figma-bg)',
       }}>
