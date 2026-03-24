@@ -100,11 +100,11 @@ export default function MobileAbout() {
       flexDirection: 'column',
       overflow: 'hidden',
     }}>
-      {/* Sticker collage area — 65% of height */}
+      {/* Sticker collage area */}
       <div style={{
         position: 'relative',
         width: '100%',
-        flex: '0 0 62%',
+        flex: 1,
         overflow: 'hidden',
       }}>
         {MOBILE_ITEMS.map(item => (
@@ -112,31 +112,31 @@ export default function MobileAbout() {
         ))}
       </div>
 
-      {/* Bio text + social links — pinned at bottom */}
+      {/* Bio text + social links — compact, pinned at bottom */}
       <div style={{
         flexShrink: 0,
-        padding: '0 28px 16px',
+        padding: '0 28px 6px',
         textAlign: 'center',
       }}>
         <div style={{
-          fontSize: Math.min(containerWidth * 0.042, 17),
+          fontSize: Math.min(containerWidth * 0.04, 16),
           fontWeight: 400,
           color: 'var(--figma-text)',
-          lineHeight: 1.55,
+          lineHeight: 1.5,
           fontFamily: "'Figtree', sans-serif",
           letterSpacing: '-0.03em',
         }}>
           Hello I'm Piyush Jain, brand & product designer, builder, and someone who loves making things pretty. Mostly working around AI and new ideas these days
         </div>
 
-        {/* Social links — Pikaicons */}
+        {/* Social links */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           gap: 24,
-          paddingTop: 14,
-          paddingBottom: 4,
+          paddingTop: 10,
+          paddingBottom: 2,
         }}>
           {SOCIAL_LINKS.map((link, i) => (
             <div
@@ -161,17 +161,16 @@ export default function MobileAbout() {
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Footer credit */}
-      <div style={{
-        fontSize: 12,
-        color: 'var(--figma-text-tertiary)',
-        textAlign: 'center',
-        padding: '8px 0',
-        whiteSpace: 'nowrap',
-      }}>
-        Made with ❤️ by Piyush Jain and Claude
+        {/* Footer credit */}
+        <div style={{
+          fontSize: 11,
+          color: 'var(--figma-text-tertiary)',
+          paddingTop: 8,
+          whiteSpace: 'nowrap',
+        }}>
+          Made with ❤️ by Piyush Jain and Claude
+        </div>
       </div>
 
       {/* Toast */}
