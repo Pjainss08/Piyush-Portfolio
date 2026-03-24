@@ -11,7 +11,7 @@ const TAG_STYLES = {
 export const BUILDS_PROJECTS = [
   {
     id: 'farfield',
-    title: 'Farfiled',
+    title: 'Farfield',
     description: 'Social store for creatives to sell their assets onchain and earn in crypto. Onchain Summer Awards Winner.',
     image: '/build-farfield.webp',
     tags: ['Branding', 'Visual Design', 'Mini App Design'],

@@ -59,20 +59,22 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange,
             )}
           </div>
 
-          {/* Share button */}
-          <button style={{
-            background: '#0d99ff',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 6,
-            padding: '6px 16px',
-            fontSize: 12,
-            fontWeight: 600,
-            cursor: 'pointer',
-            fontFamily: 'Figtree, sans-serif',
-          }}>
-            Share
-          </button>
+          {/* Say hii button */}
+          <a href="https://cal.com/piyushxpj" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+            <button style={{
+              background: '#0d99ff',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 6,
+              padding: '6px 16px',
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontFamily: 'Figtree, sans-serif',
+            }}>
+              Say hii
+            </button>
+          </a>
         </div>
       </div>
 

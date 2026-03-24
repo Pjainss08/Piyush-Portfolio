@@ -20,7 +20,7 @@ export const PROJECTS = [
   { id: 'playground-collage', title: 'Playground Collage', page: 'playground', x: 0, y: 1700, width: 1400, height: 900, color: 'transparent', description: 'Experiments and explorations' },
 
   // Builds region — rendered by BuildsSection component
-  { id: 'build-farfield', title: 'Farfiled', page: 'builds', x: 2300, y: 1700, width: 420, height: 380, color: 'transparent', description: 'Social store for creatives to sell their assets onchain' },
+  { id: 'build-farfield', title: 'Farfield', page: 'builds', x: 2300, y: 1700, width: 420, height: 380, color: 'transparent', description: 'Social store for creatives to sell their assets onchain' },
   { id: 'build-dither-matrix', title: 'Dither Matrix', page: 'builds', x: 2760, y: 1700, width: 420, height: 380, color: 'transparent', description: 'Dither tool made for designers' },
   { id: 'build-pixel-pop', title: 'Pixel Pop Tool', page: 'builds', x: 3220, y: 1700, width: 420, height: 380, color: 'transparent', description: 'Convert any image into pixel art' },
   { id: 'build-freetype-writer', title: 'Freetype Writer', page: 'builds', x: 2760, y: 2220, width: 420, height: 380, color: 'transparent', description: 'Write like a typewriter and export' },
