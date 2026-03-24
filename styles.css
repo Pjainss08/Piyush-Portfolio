@@ -39,6 +39,14 @@ html, body, #root {
   cursor: grabbing;
 }
 
+.canvas-viewport [data-card] {
+  cursor: pointer;
+}
+
+.canvas-viewport [data-card] * {
+  cursor: pointer;
+}
+
 .canvas-world {
   position: absolute;
   top: 0;
