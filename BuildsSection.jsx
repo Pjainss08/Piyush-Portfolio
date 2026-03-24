@@ -30,7 +30,7 @@ export const BUILDS_PROJECTS = [
     title: 'Pixel Pop Tool',
     description: 'Convert any image into pixel art with this tool. Customize the pixel size and color palette.',
     image: '/pixel-pop.webp',
-    tags: ['Website Design', 'Product Design'],
+    tags: ['Visual Design', 'Product Design'],
     url: 'https://pixelart.piyushjain.in',
   },
   {
