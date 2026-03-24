@@ -63,6 +63,7 @@ function WorkCard({ project, x, y, onSelect }) {
         top: y,
         width: 420,
         cursor: 'pointer',
+        zIndex: 1,
       }}
     >
       {/* Image — no wrapper, just the image with natural aspect ratio */}
@@ -74,6 +75,7 @@ function WorkCard({ project, x, y, onSelect }) {
           width: '100%',
           display: 'block',
           borderRadius: 14,
+          cursor: 'pointer',
         }}
       />
 

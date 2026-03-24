@@ -54,6 +54,7 @@ function BuildCard({ project, x, y, onSelect }) {
         top: y,
         width: 420,
         cursor: 'pointer',
+        zIndex: 1,
       }}
     >
       <img
@@ -64,6 +65,7 @@ function BuildCard({ project, x, y, onSelect }) {
           width: '100%',
           display: 'block',
           borderRadius: 14,
+          cursor: 'pointer',
         }}
       />
 
