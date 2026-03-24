@@ -105,9 +105,10 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange,
       <div style={{
         padding: '12px',
         borderTop: '1px solid var(--figma-border)',
-        fontSize: 14,
+        fontSize: 12,
         color: 'var(--figma-text-secondary)',
         textAlign: 'center',
+        whiteSpace: 'nowrap',
       }}>
         Made with ❤️ by Piyush Jain and Claude
       </div>
