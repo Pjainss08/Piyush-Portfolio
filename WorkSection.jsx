@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Tag styles from Figma CSS
 const TAG_STYLES = {
@@ -53,10 +54,12 @@ export const WORK_PROJECTS = [
 ];
 
 function WorkCard({ project, x, y, onSelect }) {
+  const navigate = useNavigate();
   return (
     <div
       data-card
       onClick={(e) => { e.stopPropagation(); onSelect && onSelect(`work-${project.id}`); }}
+      onDoubleClick={(e) => { e.stopPropagation(); navigate(`/project/${project.id}`); }}
       style={{
         position: 'absolute',
         left: x,
