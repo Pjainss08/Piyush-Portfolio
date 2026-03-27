@@ -1,229 +1,181 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import useCanvas from './useCanvas.js';
 import { PROJECT_DETAILS, ALL_PROJECTS } from './projectData.js';
 
-const TAG_STYLES = {
-  'Rebrand': { color: '#009EFF', bg: 'rgba(0, 158, 255, 0.10)' },
-  'Visual Design': { color: '#FF5100', bg: 'rgba(255, 81, 0, 0.10)' },
-  'Product Design': { color: '#00B25D', bg: 'rgba(0, 178, 93, 0.10)' },
-  'Website Design': { color: '#8253FF', bg: 'rgba(130, 83, 255, 0.10)' },
-  'Mini App Design': { color: '#FF2ADF', bg: 'rgba(255, 42, 223, 0.10)' },
-  'Branding': { color: '#009EFF', bg: 'rgba(0, 158, 255, 0.10)' },
-};
-
 function CanvasItem({ item }) {
+  const baseStyle = { position: 'absolute', left: item.x, top: item.y };
+
   switch (item.type) {
     case 'hero':
       return (
-        <div style={{
-          position: 'absolute', left: item.x, top: item.y,
-          width: item.width, borderRadius: 16, overflow: 'hidden',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-          border: '1px solid rgba(0,0,0,0.06)',
-        }}>
+        <div style={{ ...baseStyle, width: item.width, borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.06)' }}>
           <img src={item.image} alt="" style={{ width: '100%', display: 'block' }} />
         </div>
       );
     case 'heading':
       return (
-        <div style={{
-          position: 'absolute', left: item.x, top: item.y,
-          fontSize: 36, fontWeight: 700, color: '#1e1e1e',
-          fontFamily: "'Figtree', sans-serif",
-          letterSpacing: '-0.03em',
-        }}>
+        <div style={{ ...baseStyle, fontSize: 32, fontWeight: 700, color: '#1e1e1e', fontFamily: "'Figtree', sans-serif", letterSpacing: '-0.03em' }}>
           {item.text}
         </div>
       );
     case 'text':
       return (
-        <div style={{
-          position: 'absolute', left: item.x, top: item.y,
-          width: item.width, fontSize: 16, color: '#666',
-          fontFamily: "'Figtree', sans-serif",
-          lineHeight: 1.6, letterSpacing: '-0.02em',
-        }}>
+        <div style={{ ...baseStyle, width: item.width, fontSize: 15, color: '#666', fontFamily: "'Figtree', sans-serif", lineHeight: 1.6, letterSpacing: '-0.02em' }}>
           {item.text}
         </div>
       );
     case 'label':
       return (
-        <div style={{
-          position: 'absolute', left: item.x, top: item.y,
-          fontSize: 12, fontWeight: 600, color: '#999',
-          fontFamily: "'Figtree', sans-serif",
-          textTransform: 'uppercase', letterSpacing: '0.08em',
-        }}>
+        <div style={{ ...baseStyle, fontSize: 11, fontWeight: 600, color: '#aaa', fontFamily: "'Figtree', sans-serif", textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           {item.text}
         </div>
       );
     case 'section':
       return (
-        <div style={{
-          position: 'absolute', left: item.x, top: item.y,
-          fontSize: 14, fontWeight: 600, color: '#999',
-          fontFamily: "'Figtree', sans-serif",
-          textTransform: 'uppercase', letterSpacing: '0.08em',
-        }}>
+        <div style={{ ...baseStyle, fontSize: 13, fontWeight: 600, color: '#aaa', fontFamily: "'Figtree', sans-serif", textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           {item.text}
+        </div>
+      );
+    case 'card':
+      return (
+        <div style={{
+          ...baseStyle, width: item.width || 280, minHeight: item.height || 200,
+          background: '#fff', borderRadius: 8, border: '1px solid #e0e0e0',
+          padding: 0, overflow: 'hidden',
+        }}>
+          {item.image && (
+            <img src={item.image} alt="" style={{ width: '100%', display: 'block' }} />
+          )}
+          {item.title && (
+            <div style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 600, color: '#1e1e1e', fontFamily: "'Figtree', sans-serif" }}>
+              {item.title}
+            </div>
+          )}
+          {item.desc && (
+            <div style={{ padding: '0 16px 12px', fontSize: 12, color: '#888', fontFamily: "'Figtree', sans-serif", lineHeight: 1.5 }}>
+              {item.desc}
+            </div>
+          )}
         </div>
       );
     case 'placeholder':
       return (
         <div style={{
-          position: 'absolute', left: item.x, top: item.y,
-          width: item.width, height: item.height,
-          borderRadius: 12, border: '2px dashed #ddd',
-          background: '#fafafa',
+          ...baseStyle, width: item.width, height: item.height,
+          borderRadius: 8, border: '1px solid #ddd', background: '#fff',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#bbb', fontSize: 14, fontFamily: "'Figtree', sans-serif",
+          flexDirection: 'column', gap: 4,
         }}>
-          {item.label}
+          <span style={{ color: '#ccc', fontSize: 13, fontFamily: "'Figtree', sans-serif", fontWeight: 500 }}>{item.label}</span>
+          {item.sublabel && <span style={{ color: '#ddd', fontSize: 11, fontFamily: "'Figtree', sans-serif" }}>{item.sublabel}</span>}
         </div>
       );
     case 'sticky':
       return (
         <div style={{
-          position: 'absolute', left: item.x, top: item.y,
-          width: item.width, padding: 16,
-          background: item.color || '#FEFF9C',
-          borderRadius: '2px',
-          boxShadow: '2px 4px 12px rgba(0,0,0,0.08)',
-          fontSize: 14, color: '#444',
-          fontFamily: "'Figtree', sans-serif",
-          lineHeight: 1.5,
-          transform: `rotate(${(item.x % 5) - 2}deg)`,
+          ...baseStyle, width: item.width || 200, padding: 14,
+          background: item.color || '#FEFF9C', borderRadius: 2,
+          boxShadow: '2px 3px 8px rgba(0,0,0,0.06)',
+          fontSize: 13, color: '#444', fontFamily: "'Figtree', sans-serif",
+          lineHeight: 1.5, transform: `rotate(${(item.x % 7) - 3}deg)`,
         }}>
           {item.text}
         </div>
       );
+    case 'connector':
+      return null; // future: draw lines between items
     default:
       return null;
   }
-}
-
-function FloatingSidebar({ currentId }) {
-  const navigate = useNavigate();
-
-  return (
-    <div style={{
-      position: 'fixed',
-      right: 20,
-      top: '50%',
-      transform: 'translateY(-50%)',
-      background: '#fff',
-      borderRadius: 12,
-      padding: '8px',
-      boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
-      border: '1px solid #e8e8e8',
-      zIndex: 100,
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 2,
-      minWidth: 160,
-    }}>
-      {ALL_PROJECTS.map(p => (
-        <div
-          key={p.id}
-          onClick={() => navigate(`/project/${p.id}`)}
-          style={{
-            padding: '10px 14px',
-            borderRadius: 8,
-            cursor: 'pointer',
-            fontSize: 13,
-            fontWeight: currentId === p.id ? 600 : 400,
-            fontFamily: "'Figtree', sans-serif",
-            color: currentId === p.id ? '#1e1e1e' : '#888',
-            background: currentId === p.id ? '#f0f0f0' : 'transparent',
-            transition: 'all 0.15s',
-            letterSpacing: '-0.02em',
-          }}
-        >
-          {p.title}
-        </div>
-      ))}
-    </div>
-  );
 }
 
 export default function ProjectPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const project = PROJECT_DETAILS[id];
-  const { transform, handlers, containerRef, isPanning } = useCanvas({ x: 0, y: 0, scale: 0.8 });
+  const { transform, handlers, containerRef, isPanning } = useCanvas({ x: 40, y: 20, scale: 0.75 });
+
+  const currentIndex = ALL_PROJECTS.findIndex(p => p.id === id);
 
   if (!project) {
     return (
-      <div style={{
-        height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        flexDirection: 'column', gap: 16, fontFamily: "'Figtree', sans-serif",
-      }}>
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, fontFamily: "'Figtree', sans-serif" }}>
         <div style={{ fontSize: 24, fontWeight: 600 }}>Project not found</div>
-        <Link to="/" style={{ color: '#0d99ff', textDecoration: 'none' }}>Back to portfolio</Link>
+        <div onClick={() => navigate('/')} style={{ color: '#0d99ff', cursor: 'pointer' }}>Back to portfolio</div>
       </div>
     );
   }
 
   return (
-    <div style={{
-      height: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden',
-      background: '#F5F0EB',
-    }}>
-      {/* Top bar */}
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#F5F0EB' }}>
+
+      {/* Top bar — FigJam style */}
       <div style={{
-        height: 48,
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 16px',
-        background: '#fff',
-        borderBottom: '1px solid #e8e8e8',
-        flexShrink: 0,
-        zIndex: 50,
+        height: 48, display: 'flex', alignItems: 'center', padding: '0 12px',
+        background: '#fff', borderBottom: '1px solid #e8e8e8', flexShrink: 0, zIndex: 50,
+        justifyContent: 'space-between',
       }}>
-        {/* Back button */}
-        <div
-          onClick={() => navigate('/')}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            cursor: 'pointer', color: '#666', fontSize: 13,
-            fontFamily: "'Figtree', sans-serif",
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-          Back
+        {/* Left: FigJam logo + tabs */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          {/* FigJam-ish icon */}
+          <div
+            onClick={() => navigate('/')}
+            style={{
+              width: 32, height: 32, borderRadius: 8,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', color: '#666',
+            }}
+            title="Back to portfolio"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </div>
+
+          {/* Project tabs */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 0,
+            background: '#f5f5f5', borderRadius: 8, padding: 3,
+          }}>
+            {ALL_PROJECTS.map((p) => (
+              <div
+                key={p.id}
+                onClick={() => navigate(`/project/${p.id}`)}
+                style={{
+                  padding: '5px 14px', borderRadius: 6, cursor: 'pointer',
+                  fontSize: 13, fontWeight: p.id === id ? 600 : 400,
+                  fontFamily: "'Figtree', sans-serif",
+                  color: p.id === id ? '#1e1e1e' : '#999',
+                  background: p.id === id ? '#fff' : 'transparent',
+                  boxShadow: p.id === id ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.15s',
+                  letterSpacing: '-0.02em',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {p.title}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Title */}
-        <div style={{
-          flex: 1, textAlign: 'center',
-          fontSize: 14, fontWeight: 600,
-          fontFamily: "'Figtree', sans-serif",
-          color: '#1e1e1e',
-          letterSpacing: '-0.02em',
-        }}>
-          {project.title}
-        </div>
-
-        {/* Tags */}
-        <div style={{ display: 'flex', gap: 6 }}>
-          {project.tags.map((tag, i) => {
-            const s = TAG_STYLES[tag] || { color: '#666', bg: 'rgba(0,0,0,0.05)' };
-            return (
-              <span key={i} style={{
-                padding: '3px 10px', fontSize: 12, fontWeight: 500,
-                color: s.color, background: s.bg, borderRadius: 8,
-                fontFamily: "'Figtree', sans-serif",
+        {/* Right: avatar + share */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden' }}>
+            <img src="/pj-avatar.webp" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+          {project.url && (
+            <a href={project.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+              <div style={{
+                background: '#0d99ff', color: '#fff', padding: '6px 14px',
+                borderRadius: 6, fontSize: 12, fontWeight: 600,
+                fontFamily: "'Figtree', sans-serif", cursor: 'pointer',
               }}>
-                {tag}
-              </span>
-            );
-          })}
+                Visit
+              </div>
+            </a>
+          )}
         </div>
       </div>
 
@@ -231,18 +183,12 @@ export default function ProjectPage() {
       <div
         ref={containerRef}
         className="canvas-viewport"
-        style={{
-          flex: 1,
-          cursor: isPanning ? 'grabbing' : 'grab',
-          background: '#F5F0EB',
-        }}
+        style={{ flex: 1, cursor: isPanning ? 'grabbing' : 'grab', background: '#F5F0EB' }}
         {...handlers}
       >
         <div
           className="canvas-world"
-          style={{
-            transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
-          }}
+          style={{ transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})` }}
         >
           {project.canvasItems.map((item, i) => (
             <CanvasItem key={i} item={item} />
@@ -250,41 +196,54 @@ export default function ProjectPage() {
         </div>
       </div>
 
-      {/* Floating sidebar */}
-      <FloatingSidebar currentId={id} />
-
-      {/* Visit project button */}
-      {project.url && (
-        <a
-          href={project.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            position: 'fixed',
-            bottom: 20,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: '#1e1e1e',
-            color: '#fff',
-            padding: '10px 24px',
-            borderRadius: 10,
-            fontSize: 14,
-            fontWeight: 600,
-            fontFamily: "'Figtree', sans-serif",
-            textDecoration: 'none',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-            zIndex: 100,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
+      {/* Bottom toolbar — FigJam style (minimal) */}
+      <div style={{
+        position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)',
+        zIndex: 50, display: 'flex', alignItems: 'center', gap: 2,
+        background: '#fff', borderRadius: 10, padding: '6px 12px',
+        boxShadow: '0 2px 16px rgba(0,0,0,0.1)', border: '1px solid #e0e0e0',
+      }}>
+        {/* Prev */}
+        <div
+          onClick={() => {
+            const prev = ALL_PROJECTS[(currentIndex - 1 + ALL_PROJECTS.length) % ALL_PROJECTS.length];
+            navigate(`/project/${prev.id}`);
           }}
+          style={{
+            width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            borderRadius: 6, cursor: 'pointer', color: '#666',
+          }}
+          title="Previous project"
         >
-          Visit Project
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M7 17L17 7M17 7H7M17 7v10" />
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 18l-6-6 6-6" />
           </svg>
-        </a>
-      )}
+        </div>
+
+        <div style={{
+          padding: '0 12px', fontSize: 13, fontWeight: 500, color: '#666',
+          fontFamily: "'Figtree', sans-serif", whiteSpace: 'nowrap',
+        }}>
+          {currentIndex + 1} / {ALL_PROJECTS.length}
+        </div>
+
+        {/* Next */}
+        <div
+          onClick={() => {
+            const next = ALL_PROJECTS[(currentIndex + 1) % ALL_PROJECTS.length];
+            navigate(`/project/${next.id}`);
+          }}
+          style={{
+            width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            borderRadius: 6, cursor: 'pointer', color: '#666',
+          }}
+          title="Next project"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        </div>
+      </div>
     </div>
   );
 }

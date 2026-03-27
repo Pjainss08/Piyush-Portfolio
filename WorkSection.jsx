@@ -58,8 +58,7 @@ function WorkCard({ project, x, y, onSelect }) {
   return (
     <div
       data-card
-      onClick={(e) => { e.stopPropagation(); onSelect && onSelect(`work-${project.id}`); }}
-      onDoubleClick={(e) => { e.stopPropagation(); navigate(`/project/${project.id}`); }}
+      onClick={(e) => { e.stopPropagation(); navigate(`/project/${project.id}`); }}
       style={{
         position: 'absolute',
         left: x,

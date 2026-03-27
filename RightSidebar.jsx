@@ -98,7 +98,7 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange,
 
       {/* Content */}
       <div style={{ flex: 1, overflow: 'auto' }}>
-        {card ? <CardProperties card={card} /> : <PageProperties canvasBg={canvasBg} onCanvasBgChange={onCanvasBgChange} />}
+        <PageProperties canvasBg={canvasBg} onCanvasBgChange={onCanvasBgChange} />
       </div>
 
       {/* Footer */}
