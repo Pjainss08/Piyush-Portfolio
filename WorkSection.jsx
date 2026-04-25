@@ -62,6 +62,7 @@ function WorkCard({ project, x, y, onSelect }) {
         left: x,
         top: y,
         width: 420,
+        marginRight: 85,
         cursor: 'pointer',
         zIndex: 1,
       }}
