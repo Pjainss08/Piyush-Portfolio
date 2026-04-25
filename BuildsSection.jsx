@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 const TAG_STYLES = {
   'Branding': { color: '#009EFF', bg: 'rgba(0, 158, 255, 0.10)' },
@@ -129,7 +129,7 @@ function BuildCard({ project, x, y, onSelect }) {
   );
 }
 
-export default function BuildsSection({ onSelectCard }) {
+function BuildsSection({ onSelectCard }) {
   const gap = 40;
   const cardW = 420;
   const startX = 2200;
@@ -159,3 +159,5 @@ export default function BuildsSection({ onSelectCard }) {
     </>
   );
 }
+
+export default memo(BuildsSection);

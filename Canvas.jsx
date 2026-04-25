@@ -1,9 +1,8 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, memo } from 'react';
 import AboutSection from './AboutSection.jsx';
 import PlaygroundSection from './PlaygroundSection.jsx';
 import WorkSection from './WorkSection.jsx';
 import BuildsSection from './BuildsSection.jsx';
-import { PAGES } from './canvasData.js';
 
 const STICKY_COLORS = [
   { id: 'yellow', bg: '#FEFF9C', fold: '#E6E78C', shadow: 'rgba(200,180,0,0.2)' },
@@ -14,50 +13,48 @@ const STICKY_COLORS = [
   { id: 'orange', bg: '#FFD59E', fold: '#E6BD88', shadow: 'rgba(180,140,50,0.2)' },
 ];
 
-function CanvasStickyItem({ item, isSelected, onSelect, onUpdate, onDelete, transform, containerRef }) {
+const CanvasStickyItem = memo(function CanvasStickyItem({ item, isSelected, onSelect, onUpdate, onDelete, transformRef }) {
   const [editing, setEditing] = useState(!item.text);
   const [text, setText] = useState(item.text || '');
-  const [dragging, setDragging] = useState(false);
-  const dragStart = useRef(null);
   const inputRef = useRef(null);
+  const elRef = useRef(null);
 
   useEffect(() => {
-    if (editing && inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (editing && inputRef.current) inputRef.current.focus();
   }, [editing]);
 
   const handleMouseDown = (e) => {
     if (editing) return;
     e.stopPropagation();
     onSelect(item.id);
-    dragStart.current = {
-      mouseX: e.clientX,
-      mouseY: e.clientY,
-      itemX: item.x,
-      itemY: item.y,
+
+    const startMouse = { x: e.clientX, y: e.clientY };
+    const startItem = { x: item.x, y: item.y };
+    const scale = transformRef.current.scale;
+    let lastX = item.x;
+    let lastY = item.y;
+    let moved = false;
+
+    const onMove = (ev) => {
+      const dx = (ev.clientX - startMouse.x) / scale;
+      const dy = (ev.clientY - startMouse.y) / scale;
+      if (!moved && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) moved = true;
+      lastX = startItem.x + dx;
+      lastY = startItem.y + dy;
+      if (elRef.current) {
+        elRef.current.style.left = lastX + 'px';
+        elRef.current.style.top = lastY + 'px';
+      }
     };
 
-    const handleMouseMove = (e) => {
-      if (!dragStart.current) return;
-      const dx = (e.clientX - dragStart.current.mouseX) / transform.scale;
-      const dy = (e.clientY - dragStart.current.mouseY) / transform.scale;
-      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) setDragging(true);
-      onUpdate(item.id, {
-        x: dragStart.current.itemX + dx,
-        y: dragStart.current.itemY + dy,
-      });
+    const onUp = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      if (moved) onUpdate(item.id, { x: lastX, y: lastY });
     };
 
-    const handleMouseUp = () => {
-      dragStart.current = null;
-      setTimeout(() => setDragging(false), 0);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
   };
 
   const handleDoubleClick = (e) => {
@@ -67,20 +64,17 @@ function CanvasStickyItem({ item, isSelected, onSelect, onUpdate, onDelete, tran
 
   const handleBlur = () => {
     setEditing(false);
-    if (text.trim()) {
-      onUpdate(item.id, { text });
-    } else {
-      onDelete(item.id);
-    }
+    if (text.trim()) onUpdate(item.id, { text });
+    else onDelete(item.id);
   };
 
   const stickyColor = STICKY_COLORS.find(c => c.id === item.color) || STICKY_COLORS[0];
-  // Each sticky gets a deterministic slight rotation based on its id
   const rotation = ((item.id.charCodeAt(item.id.length - 1) % 7) - 3) * 1.2;
 
   return (
     <div
       data-card
+      ref={elRef}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
       style={{
@@ -89,13 +83,12 @@ function CanvasStickyItem({ item, isSelected, onSelect, onUpdate, onDelete, tran
         top: item.y,
         width: 220,
         minHeight: 200,
-        transform: `rotate(${rotation}deg)`,
-        cursor: editing ? 'text' : dragging ? 'grabbing' : 'grab',
+        transform: `rotate(${rotation}deg) translateZ(0)`,
+        cursor: editing ? 'text' : 'grab',
         userSelect: 'none',
-        filter: isSelected ? 'drop-shadow(0 0 0 transparent)' : 'none',
+        willChange: 'left, top',
       }}
     >
-      {/* Main paper */}
       <div style={{
         width: '100%',
         minHeight: 200,
@@ -109,7 +102,6 @@ function CanvasStickyItem({ item, isSelected, onSelect, onUpdate, onDelete, tran
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* Subtle top sticky strip */}
         <div style={{
           height: 4,
           background: `linear-gradient(180deg, rgba(0,0,0,0.06) 0%, transparent 100%)`,
@@ -156,7 +148,6 @@ function CanvasStickyItem({ item, isSelected, onSelect, onUpdate, onDelete, tran
           </div>
         )}
 
-        {/* Bottom-right folded corner */}
         <div style={{
           position: 'absolute',
           bottom: 0,
@@ -168,7 +159,6 @@ function CanvasStickyItem({ item, isSelected, onSelect, onUpdate, onDelete, tran
         }} />
       </div>
 
-      {/* Selection handles */}
       {isSelected && (
         <>
           <div className="resize-handle" style={{ top: -4, left: -4 }} />
@@ -179,66 +169,47 @@ function CanvasStickyItem({ item, isSelected, onSelect, onUpdate, onDelete, tran
       )}
     </div>
   );
-}
+});
 
-function CanvasShapeItem({ item, isSelected, onSelect, onUpdate, transform }) {
+const CanvasShapeItem = memo(function CanvasShapeItem({ item, isSelected, onSelect, onUpdate, transformRef }) {
   const isCircle = item.shapeType === 'circle';
   const isLine = item.shapeType === 'line';
   const w = Math.abs(item.width);
   const h = Math.abs(item.height);
-  const [dragging, setDragging] = useState(false);
-  const dragStart = useRef(null);
+  const elRef = useRef(null);
 
   const handleMouseDown = (e) => {
     e.stopPropagation();
     onSelect(item.id);
-    dragStart.current = {
-      mouseX: e.clientX,
-      mouseY: e.clientY,
-      itemX: item.x,
-      itemY: item.y,
+
+    const startMouse = { x: e.clientX, y: e.clientY };
+    const startItem = { x: item.x, y: item.y };
+    const scale = transformRef.current.scale;
+    let lastX = item.x;
+    let lastY = item.y;
+    let moved = false;
+
+    const onMove = (ev) => {
+      const dx = (ev.clientX - startMouse.x) / scale;
+      const dy = (ev.clientY - startMouse.y) / scale;
+      if (!moved && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) moved = true;
+      lastX = startItem.x + dx;
+      lastY = startItem.y + dy;
+      if (elRef.current) {
+        elRef.current.style.left = lastX + 'px';
+        elRef.current.style.top = lastY + 'px';
+      }
     };
 
-    const handleMouseMove = (e) => {
-      if (!dragStart.current) return;
-      const dx = (e.clientX - dragStart.current.mouseX) / transform.scale;
-      const dy = (e.clientY - dragStart.current.mouseY) / transform.scale;
-      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) setDragging(true);
-      onUpdate(item.id, {
-        x: dragStart.current.itemX + dx,
-        y: dragStart.current.itemY + dy,
-      });
+    const onUp = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      if (moved) onUpdate(item.id, { x: lastX, y: lastY });
     };
 
-    const handleMouseUp = () => {
-      dragStart.current = null;
-      setTimeout(() => setDragging(false), 0);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
   };
-
-  const resizeHandles = isSelected && !isLine ? (
-    <>
-      <div className="resize-handle" style={{ top: -4, left: -4 }} />
-      <div className="resize-handle" style={{ top: -4, right: -4 }} />
-      <div className="resize-handle" style={{ bottom: -4, left: -4 }} />
-      <div className="resize-handle" style={{ bottom: -4, right: -4 }} />
-    </>
-  ) : null;
-
-  const sizeLabel = isSelected && !isLine ? (
-    <div style={{
-      position: 'absolute', bottom: -28, left: '50%', transform: 'translateX(-50%)',
-      background: '#0d99ff', color: '#fff', fontSize: 11, fontWeight: 500,
-      padding: '2px 8px', borderRadius: 3, whiteSpace: 'nowrap', pointerEvents: 'none',
-    }}>
-      {Math.round(w)} × {Math.round(h)}
-    </div>
-  ) : null;
 
   if (isLine) {
     const dx = item.width;
@@ -248,14 +219,16 @@ function CanvasShapeItem({ item, isSelected, onSelect, onUpdate, transform }) {
     return (
       <div
         data-card
+        ref={elRef}
         onMouseDown={handleMouseDown}
         style={{
           position: 'absolute', left: item.x, top: item.y,
           width: len, height: isSelected ? 4 : 2,
           background: isSelected ? '#0d99ff' : '#999',
-          transform: `rotate(${angle}deg)`,
+          transform: `rotate(${angle}deg) translateZ(0)`,
           transformOrigin: '0 0',
-          cursor: dragging ? 'grabbing' : 'grab',
+          cursor: 'grab',
+          willChange: 'left, top',
         }}
       />
     );
@@ -264,6 +237,7 @@ function CanvasShapeItem({ item, isSelected, onSelect, onUpdate, transform }) {
   return (
     <div
       data-card
+      ref={elRef}
       onMouseDown={handleMouseDown}
       style={{
         position: 'absolute',
@@ -272,16 +246,32 @@ function CanvasShapeItem({ item, isSelected, onSelect, onUpdate, transform }) {
         borderRadius: isCircle ? '50%' : 0,
         border: `2px solid ${isSelected ? '#0d99ff' : '#ccc'}`,
         background: '#e5e5e5',
-        cursor: dragging ? 'grabbing' : 'grab',
+        cursor: 'grab',
+        transform: 'translateZ(0)',
+        willChange: 'left, top',
       }}
     >
-      {resizeHandles}
-      {sizeLabel}
+      {isSelected && (
+        <>
+          <div className="resize-handle" style={{ top: -4, left: -4 }} />
+          <div className="resize-handle" style={{ top: -4, right: -4 }} />
+          <div className="resize-handle" style={{ bottom: -4, left: -4 }} />
+          <div className="resize-handle" style={{ bottom: -4, right: -4 }} />
+        </>
+      )}
+      {isSelected && (
+        <div style={{
+          position: 'absolute', bottom: -28, left: '50%', transform: 'translateX(-50%)',
+          background: '#0d99ff', color: '#fff', fontSize: 11, fontWeight: 500,
+          padding: '2px 8px', borderRadius: 3, whiteSpace: 'nowrap', pointerEvents: 'none',
+        }}>
+          {Math.round(w)} × {Math.round(h)}
+        </div>
+      )}
     </div>
   );
-}
+});
 
-// Drag preview for shape creation
 function DragPreview({ dragState }) {
   if (!dragState) return null;
   const { startX, startY, currentX, currentY, shapeType } = dragState;
@@ -316,15 +306,14 @@ function DragPreview({ dragState }) {
 }
 
 export default function Canvas({
-  transform, handlers, containerRef, isPanning,
+  worldRef, handlers, containerRef, transformRef,
   selectedCard, onSelectCard,
   canvasBg, activeTool, shapeType, onCanvasClick,
-  canvasItems, setCanvasItems, onResetTool, stickyColor,
+  canvasItems, setCanvasItems, onResetTool,
 }) {
   const [dragState, setDragState] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  // Delete selected canvas item with Delete/Backspace key
   useEffect(() => {
     const handler = (e) => {
       if (selectedItem && (e.key === 'Delete' || e.key === 'Backspace') && !e.target.closest('input, textarea')) {
@@ -339,11 +328,12 @@ export default function Canvas({
   const getWorldCoords = useCallback((e) => {
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return { x: 0, y: 0 };
+    const t = transformRef.current;
     return {
-      x: (e.clientX - rect.left - transform.x) / transform.scale,
-      y: (e.clientY - rect.top - transform.y) / transform.scale,
+      x: (e.clientX - rect.left - t.x) / t.scale,
+      y: (e.clientY - rect.top - t.y) / t.scale,
     };
-  }, [transform, containerRef]);
+  }, [containerRef, transformRef]);
 
   const handleMouseDown = useCallback((e) => {
     if (e.target.closest('[data-card]') || e.target.closest('[data-no-pan]')) return;
@@ -403,14 +393,15 @@ export default function Canvas({
 
   const deleteItem = useCallback((id) => {
     setCanvasItems(prev => prev.filter(item => item.id !== id));
-    if (selectedItem === id) setSelectedItem(null);
-  }, [setCanvasItems, selectedItem]);
+    setSelectedItem(prev => prev === id ? null : prev);
+  }, [setCanvasItems]);
 
-  const cursorMap = {
-    move: isPanning ? 'grabbing' : 'grab',
-    sticky: 'crosshair',
-    shape: 'crosshair',
-  };
+  const selectItem = useCallback((id) => {
+    setSelectedItem(id);
+    onSelectCard(null);
+  }, [onSelectCard]);
+
+  const cursorMap = { move: 'grab', sticky: 'crosshair', shape: 'crosshair' };
 
   const mergedHandlers = {
     ...handlers,
@@ -419,18 +410,12 @@ export default function Canvas({
       if (activeTool === 'move') handlers.onMouseDown(e);
     },
     onMouseMove: (e) => {
-      if (dragState) {
-        handleMouseMove(e);
-      } else {
-        handlers.onMouseMove(e);
-      }
+      if (dragState) handleMouseMove(e);
+      else handlers.onMouseMove(e);
     },
     onMouseUp: (e) => {
-      if (dragState) {
-        handleMouseUp();
-      } else {
-        handlers.onMouseUp(e);
-      }
+      if (dragState) handleMouseUp();
+      else handlers.onMouseUp(e);
     },
     onMouseLeave: (e) => {
       if (dragState) handleMouseUp();
@@ -449,38 +434,22 @@ export default function Canvas({
       {...mergedHandlers}
       onClick={handleClick}
     >
-      <div
-        className="canvas-world"
-        style={{
-          transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
-        }}
-      >
-        {/* Page region labels removed — sections handle their own rendering */}
-
-        {/* About Section collage */}
-        <AboutSection transform={transform} />
-
-        {/* Work Section */}
+      <div ref={worldRef} className="canvas-world">
+        <AboutSection transformRef={transformRef} />
         <WorkSection onSelectCard={onSelectCard} />
-
-        {/* Playground Section collage */}
-        <PlaygroundSection transform={transform} />
-
-        {/* Builds Section */}
+        <PlaygroundSection transformRef={transformRef} />
         <BuildsSection onSelectCard={onSelectCard} />
 
-        {/* User-placed items */}
         {canvasItems.map(item => {
           if (item.type === 'sticky') return (
             <CanvasStickyItem
               key={item.id}
               item={item}
               isSelected={selectedItem === item.id}
-              onSelect={(id) => { setSelectedItem(id); onSelectCard(null); }}
+              onSelect={selectItem}
               onUpdate={updateItem}
               onDelete={deleteItem}
-              transform={transform}
-              containerRef={containerRef}
+              transformRef={transformRef}
             />
           );
           if (item.type === 'shape') return (
@@ -488,15 +457,14 @@ export default function Canvas({
               key={item.id}
               item={item}
               isSelected={selectedItem === item.id}
-              onSelect={(id) => { setSelectedItem(id); onSelectCard(null); }}
+              onSelect={selectItem}
               onUpdate={updateItem}
-              transform={transform}
+              transformRef={transformRef}
             />
           );
           return null;
         })}
 
-        {/* Drag preview */}
         <DragPreview dragState={dragState} />
       </div>
     </div>

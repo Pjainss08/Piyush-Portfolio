@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 // Tag styles from Figma CSS
 const TAG_STYLES = {
@@ -143,7 +143,7 @@ function WorkCard({ project, x, y, onSelect }) {
   );
 }
 
-export default function WorkSection({ onSelectCard }) {
+function WorkSection({ onSelectCard }) {
   const gap = 40;
   const cardW = 420;
   const startX = 2200;
@@ -174,3 +174,5 @@ export default function WorkSection({ onSelectCard }) {
     </>
   );
 }
+
+export default memo(WorkSection);

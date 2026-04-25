@@ -44,7 +44,7 @@ export default function App() {
 }
 
 function DesktopApp({ isDark, onToggleTheme }) {
-  const { transform, handlers, containerRef, isPanning, panTo } = useCanvas();
+  const { worldRef, handlers, containerRef, transformRef, panTo } = useCanvas();
   const [activePage, setActivePage] = useState('about');
   const [selectedCard, setSelectedCard] = useState(null);
   const [canvasBg, setCanvasBg] = useState(isDark ? '#1e1e1e' : '#F2F2F2');
@@ -111,8 +111,8 @@ function DesktopApp({ isDark, onToggleTheme }) {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
         <LeftSidebar activePage={activePage} onPageClick={handlePageClick} selectedCard={selectedCard} onCardClick={handleCardClick} />
-        <Canvas transform={transform} handlers={handlers} containerRef={containerRef} isPanning={isPanning}
-          selectedCard={selectedCard} onSelectCard={(id) => setSelectedCard(id)} canvasBg={canvasBg}
+        <Canvas worldRef={worldRef} handlers={handlers} containerRef={containerRef} transformRef={transformRef}
+          selectedCard={selectedCard} onSelectCard={setSelectedCard} canvasBg={canvasBg}
           activeTool={activeTool} shapeType={shapeType} onCanvasClick={handleCanvasClick}
           canvasItems={canvasItems} setCanvasItems={setCanvasItems} onResetTool={resetTool} stickyColor={stickyColor} />
         <BottomToolbar activeTool={activeTool} shapeType={shapeType} stickyColor={stickyColor}
