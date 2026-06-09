@@ -109,7 +109,7 @@ const DraggableItem = memo(function DraggableItem({ item, onUpdate, transformRef
 });
 
 const BIO_SHORT = "Hello I'm Piyush Jain, brand & product designer, builder, and someone who loves making things pretty. Mostly working around AI and new ideas these days.";
-const BIO_LONG = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
+const BIO_LONG = "I'm 22, and I've been designing for about five years. Most of that time has gone into building products across Web2, Web3, and e-commerce. These days I'm deep in AI, building small internal tools for myself and trying to get genuinely good at it.\n\nI was never the studious kid, but I've always been curious about design and how things work. Making things pretty is something I've loved for as long as I can remember.\n\nOutside of work, I travel when I can, watch a lot of movies, and keep good music on most of the day. I'm into watches, tech products, and I'll happily spend an hour critiquing a design that didn't need to be that bad.";
 
 function AboutSection({ transformRef }) {
   const [items, setItems] = useState(INITIAL_ITEMS);
@@ -153,6 +153,7 @@ function AboutSection({ transformRef }) {
           color: 'var(--figma-text)',
           lineHeight: 1.5,
           letterSpacing: '-0.02em',
+          whiteSpace: 'pre-line',
           pointerEvents: 'auto',
           zIndex: 10,
         }}
