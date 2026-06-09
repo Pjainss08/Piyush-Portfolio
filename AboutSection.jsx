@@ -1,16 +1,17 @@
 import React, { useState, useRef, useCallback, memo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 
 const INITIAL_ITEMS = [
-  { id: 'notebook', src: '/notebook.webp', x: -40, y: 80, width: 320, rotate: -3, zIndex: 0 },
-  { id: 'srk', src: '/sticker-srk.webp', x: 220, y: -20, width: 170, rotate: -5, zIndex: 3 },
-  { id: 'polaroid-me', src: '/polaroid-me.webp', x: 320, y: 60, width: 300, rotate: -6, zIndex: 2 },
-  { id: 'vinyl', src: '/vinyl-record.webp', x: 490, y: -30, width: 140, rotate: 8, zIndex: 5 },
-  { id: 'polaroid-mountain', src: '/polaroid-mountain.webp', x: 560, y: 40, width: 300, rotate: 4, zIndex: 1 },
-  { id: 'blob', src: '/sticker-blob.webp', x: 820, y: -20, width: 90, rotate: 6, zIndex: 3 },
-  { id: 'book', src: '/book-show-your-work.webp', x: 950, y: 30, width: 280, rotate: 5, zIndex: 1 },
-  { id: 'spiderman', src: '/sticker-spiderman.webp', x: 280, y: 400, width: 180, rotate: -2, zIndex: 1 },
-  { id: 'king', src: '/sticker-king.webp', x: 800, y: 180, width: 180, rotate: -2, zIndex: 2 },
-  { id: 'pantone', src: '/pantone.webp', x: 980, y: 380, width: 140, rotate: -4, zIndex: 1, sticker: true },
+  { id: 'notebook', src: '/about/notebook.webp', x: -40, y: 80, width: 320, rotate: -3, zIndex: 0 },
+  { id: 'srk', src: '/about/sticker-srk.webp', x: 220, y: -20, width: 170, rotate: -5, zIndex: 3 },
+  { id: 'polaroid-me', src: '/about/polaroid-me.webp', x: 320, y: 60, width: 300, rotate: -6, zIndex: 2 },
+  { id: 'vinyl', src: '/about/vinyl-record.webp', x: 490, y: -30, width: 140, rotate: 8, zIndex: 5 },
+  { id: 'polaroid-mountain', src: '/about/polaroid-mountain.webp', x: 560, y: 40, width: 300, rotate: 4, zIndex: 1 },
+  { id: 'blob', src: '/about/sticker-blob.webp', x: 820, y: -20, width: 90, rotate: 6, zIndex: 3 },
+  { id: 'book', src: '/about/book-show-your-work.webp', x: 950, y: 30, width: 280, rotate: 5, zIndex: 1 },
+  { id: 'spiderman', src: '/about/sticker-spiderman.webp', x: 80, y: 440, width: 180, rotate: -2, zIndex: 1 },
+  { id: 'king', src: '/about/sticker-king.webp', x: 800, y: 180, width: 180, rotate: -2, zIndex: 2 },
+  { id: 'pantone', src: '/about/pantone.webp', x: 980, y: 380, width: 140, rotate: -4, zIndex: 1, sticker: true },
 ];
 
 const DraggableItem = memo(function DraggableItem({ item, onUpdate, transformRef }) {
@@ -107,12 +108,19 @@ const DraggableItem = memo(function DraggableItem({ item, onUpdate, transformRef
   );
 });
 
+const BIO_SHORT = "Hello I'm Piyush Jain, brand & product designer, builder, and someone who loves making things pretty. Mostly working around AI and new ideas these days.";
+const BIO_LONG = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
+
 function AboutSection({ transformRef }) {
   const [items, setItems] = useState(INITIAL_ITEMS);
+  const [expanded, setExpanded] = useState(false);
 
   const updateItem = useCallback((id, updates) => {
     setItems(prev => prev.map(item => item.id === id ? { ...item, ...updates } : item));
   }, []);
+
+  // Push callout below the bio. Keep gap consistent between collapsed/expanded.
+  const calloutTop = expanded ? 770 : 590;
 
   return (
     <div style={{
@@ -132,20 +140,49 @@ function AboutSection({ transformRef }) {
         />
       ))}
 
-      <div style={{
-        position: 'absolute',
-        left: 460,
-        top: 440,
-        width: 380,
-        fontSize: 24,
-        fontFamily: "'Figtree', sans-serif",
-        fontWeight: 400,
-        color: 'var(--figma-text)',
-        lineHeight: 1.5,
-        letterSpacing: '-0.02em',
-        pointerEvents: 'none',
-      }}>
-        Hello I'm Piyush Jain, brand & product designer, builder, and someone who loves making things pretty. Mostly working around AI and new ideas these days
+      <div
+        data-no-pan
+        style={{
+          position: 'absolute',
+          left: 400,
+          top: 440,
+          width: 500,
+          fontSize: 24,
+          fontFamily: "'Figtree', sans-serif",
+          fontWeight: 400,
+          color: 'var(--figma-text)',
+          lineHeight: 1.5,
+          letterSpacing: '-0.02em',
+          pointerEvents: 'auto',
+          zIndex: 10,
+        }}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={expanded ? 'long' : 'short'}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            style={{ display: 'inline-block' }}
+          >
+            {expanded ? BIO_LONG : BIO_SHORT}
+            {' '}
+            <span
+              onClick={(e) => { e.stopPropagation(); setExpanded(v => !v); }}
+              onMouseDown={(e) => e.stopPropagation()}
+              style={{
+                color: 'var(--figma-blue, #0d99ff)',
+                cursor: 'pointer',
+                fontWeight: 500,
+                textDecoration: 'underline',
+                userSelect: 'none',
+              }}
+            >
+              {expanded ? 'tldr' : 'More'}
+            </span>
+          </motion.span>
+        </AnimatePresence>
       </div>
 
       {/* Callout: explore the sections (top-left, arrow points left toward sidebar) */}
@@ -227,8 +264,9 @@ function AboutSection({ transformRef }) {
       {/* Callout: not figma (below bio text) */}
       <div style={{
         position: 'absolute',
-        left: 460,
-        top: 638,
+        left: 400,
+        top: calloutTop,
+        transition: 'top 0.3s ease',
         width: 460,
         fontFamily: "'Caveat', cursive",
         fontSize: 26,

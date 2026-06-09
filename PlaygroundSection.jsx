@@ -1,55 +1,5 @@
 import React, { useRef, memo, useState } from 'react';
-
-const PLAYGROUND_IMAGES = [
-  '/brunette.webp',
-  '/gdupi.webp',
-  '/higher.webp',
-  '/3.webp',
-  '/ama-1.webp',
-  '/ama-2.webp',
-  '/ama-3.webp',
-  '/background+border.webp',
-  '/card-sample-1.webp',
-  '/card-sample-2.webp',
-  '/card-sample.webp',
-  '/card.webp',
-  '/desktop---29.webp',
-  '/desktop---31.webp',
-  '/desktop---39.webp',
-  '/farcaster-friday-poap.webp',
-  '/fbi-3.webp',
-  '/frame-1116606461.webp',
-  '/frame-13.webp',
-  '/frame-2147223436.webp',
-  '/frame-2147223657.webp',
-  '/frame-2147224020.webp',
-  '/frame-2147224022.webp',
-  '/frame-2147224023.webp',
-  '/frame-2147224025.webp',
-  '/frame-2147224026-1.webp',
-  '/frame-2147224026.webp',
-  '/frame-2147224029.webp',
-  '/frame-2147224032.webp',
-  '/frame-2147224034.webp',
-  '/frame-2147224036.webp',
-  '/frame-2147224037.webp',
-  '/frame-2147224038.webp',
-  '/frame-2147224040.webp',
-  '/frame-2147224041.webp',
-  '/frame-2147224047.webp',
-  '/frame-2147224283.webp',
-  '/image-1.webp',
-  '/image-1566.webp',
-  '/image-1715.webp',
-  '/image-1717.webp',
-  '/image-1719.webp',
-  '/image-1720.webp',
-  '/image-2.webp',
-  '/image.webp',
-  '/logo-01.webp',
-  '/poap-7.webp',
-  '/success.webp',
-];
+import PLAYGROUND_IMAGES, { isVideo } from './playgroundImages.js';
 
 function seededRandom(seed) {
   let s = seed;
@@ -59,47 +9,40 @@ function seededRandom(seed) {
   };
 }
 
+function shuffled(arr, seed) {
+  const rand = seededRandom(seed);
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const SHUFFLED_IMAGES = shuffled(PLAYGROUND_IMAGES, 137);
+
+// Grid + jitter: each item gets a cell, with small random offset for organic feel
 function generatePositions(count) {
   const positions = [];
   const rand = seededRandom(42);
-  const areaWidth = 1800;
-  const areaHeight = 1800;
+  const cols = 7;
+  const cellW = 320;
+  const cellH = 320;
+  const startX = 0;
   const startY = 2100;
-  const placed = [];
+  const itemBase = 260;     // average item width
+  const sizeVariance = 50;  // ± half of this
+  const jitter = 22;        // ± per axis offset within cell
 
   for (let i = 0; i < count; i++) {
-    let bestX, bestY, bestDist = 0;
-
-    for (let attempt = 0; attempt < 20; attempt++) {
-      const tryX = rand() * areaWidth;
-      const tryY = startY + rand() * areaHeight;
-
-      let minDist = Infinity;
-      for (const p of placed) {
-        const dx = tryX - p.x;
-        const dy = tryY - p.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        minDist = Math.min(minDist, dist);
-      }
-
-      if (placed.length === 0 || minDist > bestDist) {
-        bestDist = minDist;
-        bestX = tryX;
-        bestY = tryY;
-      }
-    }
-
-    const width = 180 + rand() * 120;
-    const rotate = (rand() - 0.5) * 16;
-
-    placed.push({ x: bestX, y: bestY });
-    positions.push({
-      x: bestX,
-      y: bestY,
-      width,
-      rotate,
-      zIndex: Math.floor(rand() * 10),
-    });
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const width = itemBase + (rand() - 0.5) * sizeVariance;
+    const cellOffsetX = (cellW - width) / 2;
+    const cellOffsetY = (cellH - width) / 2;
+    const x = startX + col * cellW + cellOffsetX + (rand() - 0.5) * jitter * 2;
+    const y = startY + row * cellH + cellOffsetY + (rand() - 0.5) * jitter * 2;
+    positions.push({ x, y, width, rotate: 0, zIndex: i });
   }
   return positions;
 }
@@ -141,6 +84,40 @@ const DraggableImage = memo(function DraggableImage({ src, x, y, w, rotate, zInd
     window.addEventListener('mouseup', onUp);
   };
 
+  const commonStyle = {
+    position: 'absolute',
+    left: posRef.current.x,
+    top: posRef.current.y,
+    width: w,
+    transform: `rotate(${rotate}deg)${lifted ? ' scale(1.05)' : ''} translateZ(0)`,
+    cursor: 'grab',
+    userSelect: 'none',
+    filter: lifted
+      ? 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))'
+      : 'drop-shadow(0 2px 6px rgba(0,0,0,0.06))',
+    zIndex: lifted ? 999 : zIndex,
+    transition: 'transform 0.2s, filter 0.2s',
+    willChange: 'left, top, transform',
+    display: 'block',
+  };
+
+  if (isVideo(src)) {
+    return (
+      <video
+        data-card
+        ref={elRef}
+        src={src}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+        onMouseDown={handleMouseDown}
+        style={commonStyle}
+      />
+    );
+  }
+
   return (
     <img
       data-card
@@ -151,22 +128,7 @@ const DraggableImage = memo(function DraggableImage({ src, x, y, w, rotate, zInd
       decoding="async"
       draggable={false}
       onMouseDown={handleMouseDown}
-      style={{
-        position: 'absolute',
-        left: posRef.current.x,
-        top: posRef.current.y,
-        width: w,
-        borderRadius: 8,
-        transform: `rotate(${rotate}deg)${lifted ? ' scale(1.05)' : ''} translateZ(0)`,
-        cursor: 'grab',
-        userSelect: 'none',
-        filter: lifted
-          ? 'drop-shadow(0 8px 20px rgba(0,0,0,0.2))'
-          : 'drop-shadow(0 2px 6px rgba(0,0,0,0.06))',
-        zIndex: lifted ? 999 : zIndex,
-        transition: lifted ? 'transform 0.2s, filter 0.2s' : 'transform 0.2s, filter 0.2s',
-        willChange: 'left, top, transform',
-      }}
+      style={commonStyle}
     />
   );
 });
@@ -178,10 +140,10 @@ function PlaygroundSection({ transformRef }) {
       left: 0,
       top: 0,
       width: 3000,
-      height: 5000,
+      height: 5500,
       pointerEvents: 'auto',
     }}>
-      {PLAYGROUND_IMAGES.map((src, i) => (
+      {SHUFFLED_IMAGES.map((src, i) => (
         <DraggableImage
           key={i}
           src={src}

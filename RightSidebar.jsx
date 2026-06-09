@@ -14,12 +14,19 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange,
 
   return (
     <div className="sidebar" style={{
+      position: 'absolute',
+      top: 12,
+      right: 12,
+      bottom: 12,
       width: 256,
-      borderLeft: '1px solid var(--figma-border)',
+      border: '1px solid var(--figma-border)',
+      borderRadius: 9,
+      boxShadow: '0 6px 24px rgba(0,0,0,0.03), 0 1px 4px rgba(0,0,0,0.02)',
       display: 'flex',
       flexDirection: 'column',
       flexShrink: 0,
       zIndex: 40,
+      overflow: 'hidden',
     }}>
       {/* Top header — avatar + share */}
       <div style={{

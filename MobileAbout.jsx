@@ -1,20 +1,21 @@
 import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { SOCIAL_LINKS } from './canvasData.js';
 
+// Positions in % of collage container WIDTH for x, and % of collage HEIGHT for y.
 const MOBILE_ITEMS = [
-  { id: 'notebook', src: '/notebook.webp', x: 0, y: 15, w: 35, rotate: -3, zIndex: 0 },
-  { id: 'srk', src: '/sticker-srk.webp', x: 25, y: 0, w: 20, rotate: -5, zIndex: 2 },
-  { id: 'polaroid-me', src: '/polaroid-me.webp', x: 28, y: 12, w: 35, rotate: -6, zIndex: 3 },
-  { id: 'vinyl', src: '/vinyl-record.webp', x: 58, y: 2, w: 18, rotate: 8, zIndex: 4 },
-  { id: 'polaroid-mt', src: '/polaroid-mountain.webp', x: 55, y: 12, w: 32, rotate: 4, zIndex: 3 },
-  { id: 'blob', src: '/sticker-blob.webp', x: 82, y: 0, w: 10, rotate: 6, zIndex: 5 },
-  { id: 'book', src: '/book-show-your-work.webp', x: 70, y: 6, w: 28, rotate: 5, zIndex: 2 },
-  { id: 'spiderman', src: '/sticker-spiderman.webp', x: 8, y: 55, w: 20, rotate: -2, zIndex: 1 },
-  { id: 'king', src: '/sticker-king.webp', x: 76, y: 38, w: 22, rotate: -2, zIndex: 4 },
-  { id: 'pantone', src: '/pantone.webp', x: 62, y: 50, w: 18, rotate: -4, zIndex: 5, sticker: true },
+  { id: 'notebook', src: '/about/notebook.webp', x: 0, y: 18, w: 38, rotate: -3, zIndex: 0 },
+  { id: 'srk', src: '/about/sticker-srk.webp', x: 28, y: 0, w: 18, rotate: -5, zIndex: 3 },
+  { id: 'polaroid-me', src: '/about/polaroid-me.webp', x: 30, y: 16, w: 36, rotate: -6, zIndex: 2 },
+  { id: 'vinyl', src: '/about/vinyl-record.webp', x: 56, y: 4, w: 16, rotate: 8, zIndex: 5 },
+  { id: 'polaroid-mt', src: '/about/polaroid-mountain.webp', x: 60, y: 22, w: 34, rotate: 4, zIndex: 1 },
+  { id: 'blob', src: '/about/sticker-blob.webp', x: 86, y: 6, w: 11, rotate: 6, zIndex: 4 },
+  { id: 'book', src: '/about/book-show-your-work.webp', x: 70, y: 55, w: 28, rotate: 5, zIndex: 2 },
+  { id: 'spiderman', src: '/about/sticker-spiderman.webp', x: 4, y: 64, w: 20, rotate: -2, zIndex: 3 },
+  { id: 'king', src: '/about/sticker-king.webp', x: 50, y: 52, w: 22, rotate: -2, zIndex: 4 },
+  { id: 'pantone', src: '/about/pantone.webp', x: 28, y: 62, w: 18, rotate: -4, zIndex: 5, sticker: true },
 ];
 
-// Pikaicons stroke SVG paths
 const socialIcons = {
   'X (Twitter)': (s) => (
     <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -39,10 +40,10 @@ const socialIcons = {
   ),
 };
 
-function MobileDraggableItem({ item, containerWidth }) {
-  const px = (item.x / 100) * containerWidth;
-  const py = (item.y / 100) * containerWidth;
-  const pw = (item.w / 100) * containerWidth;
+function MobileDraggableItem({ item, collageWidth, collageHeight }) {
+  const px = (item.x / 100) * collageWidth;
+  const py = (item.y / 100) * collageHeight;
+  const pw = (item.w / 100) * collageWidth;
 
   const [pos, setPos] = useState({ x: px, y: py });
   const [dragging, setDragging] = useState(false);
@@ -89,55 +90,98 @@ function MobileDraggableItem({ item, containerWidth }) {
   );
 }
 
+const BIO_SHORT = "Hello I'm Piyush Jain, brand & product designer, builder, and someone who loves making things pretty. Mostly working around AI and new ideas these days.";
+const BIO_LONG = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
+
 export default function MobileAbout() {
   const containerWidth = typeof window !== 'undefined' ? window.innerWidth : 375;
+  const collageHeight = Math.round(containerWidth * 0.85); // tighter — pulls text closer to collage
   const [emailCopied, setEmailCopied] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const fontSize = Math.min(containerWidth * 0.04, 16);
 
   return (
     <div style={{
-      height: '100%',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
-      overflow: 'hidden',
+      paddingTop: 12,
+      paddingBottom: 120, // leave room for the pinned socials + footer
     }}>
-      {/* Sticker collage area */}
+      {/* Sticker collage */}
       <div style={{
         position: 'relative',
         width: '100%',
-        flex: '0 0 55%',
+        height: collageHeight,
         overflow: 'visible',
       }}>
         {MOBILE_ITEMS.map(item => (
-          <MobileDraggableItem key={item.id} item={item} containerWidth={containerWidth} />
+          <MobileDraggableItem
+            key={item.id}
+            item={item}
+            collageWidth={containerWidth}
+            collageHeight={collageHeight}
+          />
         ))}
       </div>
 
-      {/* Bio text + social links — compact, pinned at bottom */}
+      {/* Bio text + More toggle */}
       <div style={{
-        flexShrink: 0,
-        padding: '0 28px 6px',
+        padding: '20px 28px 0',
         textAlign: 'center',
       }}>
         <div style={{
-          fontSize: Math.min(containerWidth * 0.04, 16),
+          fontSize,
           fontWeight: 400,
           color: 'var(--figma-text)',
           lineHeight: 1.5,
           fontFamily: "'Figtree', sans-serif",
           letterSpacing: '-0.03em',
         }}>
-          Hello I'm Piyush Jain, brand & product designer, builder, and someone who loves making things pretty. Mostly working around AI and new ideas these days
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={expanded ? 'long' : 'short'}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              style={{ display: 'inline-block' }}
+            >
+              {expanded ? BIO_LONG : BIO_SHORT}
+              {' '}
+              <span
+                onClick={() => setExpanded(v => !v)}
+                style={{
+                  color: '#0d99ff',
+                  cursor: 'pointer',
+                  fontWeight: 500,
+                  textDecoration: 'underline',
+                }}
+              >
+                {expanded ? 'tldr' : 'More'}
+              </span>
+            </motion.span>
+          </AnimatePresence>
         </div>
+      </div>
 
-        {/* Social links */}
+      {/* Fixed socials + footer pinned to bottom of viewport */}
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        paddingTop: 16,
+        paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
+        background: 'linear-gradient(to bottom, transparent 0, var(--figma-bg) 30%)',
+        zIndex: 50,
+        pointerEvents: 'none',
+      }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 24,
-          paddingTop: 10,
-          paddingBottom: 2,
+          gap: 28,
+          pointerEvents: 'auto',
         }}>
           {SOCIAL_LINKS.map((link, i) => (
             <div
@@ -158,17 +202,18 @@ export default function MobileAbout() {
                 display: 'flex',
               }}
             >
-              {socialIcons[link.label]?.(18)}
+              {socialIcons[link.label]?.(20)}
             </div>
           ))}
         </div>
 
-        {/* Footer credit */}
         <div style={{
           fontSize: 11,
           color: 'var(--figma-text-tertiary)',
-          paddingTop: 8,
+          paddingTop: 12,
+          textAlign: 'center',
           whiteSpace: 'nowrap',
+          pointerEvents: 'auto',
         }}>
           Made with ❤️ by Piyush Jain and Claude
         </div>

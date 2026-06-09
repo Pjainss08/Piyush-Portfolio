@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useCallback, memo } from 'react';
 import AboutSection from './AboutSection.jsx';
 import PlaygroundSection from './PlaygroundSection.jsx';
 import WorkSection from './WorkSection.jsx';
+import WorkedWithSection from './WorkedWithSection.jsx';
 import BuildsSection from './BuildsSection.jsx';
 
 const STICKY_COLORS = [
@@ -307,7 +308,7 @@ function DragPreview({ dragState }) {
 
 export default function Canvas({
   worldRef, handlers, containerRef, transformRef,
-  selectedCard, onSelectCard,
+  selectedCard, onSelectCard, onOpenWork,
   canvasBg, activeTool, shapeType, onCanvasClick,
   canvasItems, setCanvasItems, onResetTool,
 }) {
@@ -436,9 +437,10 @@ export default function Canvas({
     >
       <div ref={worldRef} className="canvas-world">
         <AboutSection transformRef={transformRef} />
-        <WorkSection onSelectCard={onSelectCard} />
+        <WorkedWithSection />
+        <WorkSection onOpenWork={onOpenWork} />
         <PlaygroundSection transformRef={transformRef} />
-        <BuildsSection onSelectCard={onSelectCard} />
+        <BuildsSection />
 
         {canvasItems.map(item => {
           if (item.type === 'sticky') return (

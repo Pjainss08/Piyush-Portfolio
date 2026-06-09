@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { PAGES, PROJECTS } from './canvasData.js';
 
 // Pikaicons stroke paths (viewBox 0 0 24 24)
@@ -66,12 +67,19 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
 
   return (
     <div className="sidebar" style={{
+      position: 'absolute',
+      top: 12,
+      left: 12,
+      bottom: 12,
       width: 240,
-      borderRight: '1px solid var(--figma-border)',
+      border: '1px solid var(--figma-border)',
+      borderRadius: 9,
+      boxShadow: '0 6px 24px rgba(0,0,0,0.03), 0 1px 4px rgba(0,0,0,0.02)',
       display: 'flex',
       flexDirection: 'column',
       flexShrink: 0,
       zIndex: 40,
+      overflow: 'hidden',
     }}>
       {/* Top header — file name */}
       <div style={{ padding: '12px 12px 10px 12px', borderBottom: '1px solid var(--figma-border)' }}>
@@ -138,16 +146,35 @@ export default function LeftSidebar({ activePage, onPageClick, selectedCard, onC
         <div className="section-header">
           <span>Pages</span>
         </div>
-        {PAGES.map(page => (
-          <div
-            key={page.id}
-            className={`sidebar-item ${activePage === page.id ? 'active' : ''}`}
-            onClick={() => onPageClick(page)}
-          >
-            {icons.page}
-            <span>{page.label}</span>
-          </div>
-        ))}
+        {PAGES.map(page => {
+          const isActive = activePage === page.id;
+          return (
+            <div
+              key={page.id}
+              className={`sidebar-item ${isActive ? 'active' : ''}`}
+              onClick={() => onPageClick(page)}
+              style={{ position: 'relative', background: 'transparent' }}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="active-page-pill"
+                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'var(--figma-blue-bg)',
+                    borderRadius: 2,
+                    zIndex: 0,
+                  }}
+                />
+              )}
+              <span style={{ position: 'relative', zIndex: 1, display: 'inline-flex' }}>
+                {icons.page}
+              </span>
+              <span style={{ position: 'relative', zIndex: 1 }}>{page.label}</span>
+            </div>
+          );
+        })}
       </div>
 
       {/* Divider */}

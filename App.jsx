@@ -6,6 +6,8 @@ import BottomToolbar from './BottomToolbar.jsx';
 import useCanvas from './useCanvas.js';
 import useIsMobile from './useIsMobile.js';
 import MobileShell from './MobileShell.jsx';
+import WorkModal from './WorkModal.jsx';
+import Loader from './Loader.jsx';
 
 function applyTheme(isDark) {
   const root = document.documentElement;
@@ -33,17 +35,24 @@ function applyTheme(isDark) {
 export default function App() {
   const isMobile = useIsMobile();
   const [isDark, setIsDark] = useState(false);
+  const [modalProject, setModalProject] = useState(null);
 
   useEffect(() => { applyTheme(isDark); }, [isDark]);
 
-  if (isMobile) {
-    return <MobileShell isDark={isDark} onToggleTheme={() => setIsDark(!isDark)} />;
-  }
+  const closeModal = useCallback(() => setModalProject(null), []);
 
-  return <DesktopApp isDark={isDark} onToggleTheme={() => setIsDark(!isDark)} />;
+  return (
+    <>
+      <Loader />
+      {isMobile
+        ? <MobileShell isDark={isDark} onToggleTheme={() => setIsDark(!isDark)} onOpenWork={setModalProject} />
+        : <DesktopApp isDark={isDark} onToggleTheme={() => setIsDark(!isDark)} onOpenWork={setModalProject} />}
+      <WorkModal project={modalProject} onClose={closeModal} onNavigate={setModalProject} />
+    </>
+  );
 }
 
-function DesktopApp({ isDark, onToggleTheme }) {
+function DesktopApp({ isDark, onToggleTheme, onOpenWork }) {
   const { worldRef, handlers, containerRef, transformRef, panTo } = useCanvas();
   const [activePage, setActivePage] = useState('about');
   const [selectedCard, setSelectedCard] = useState(null);
@@ -56,9 +65,9 @@ function DesktopApp({ isDark, onToggleTheme }) {
   // Sync canvas bg with theme
   useEffect(() => { setCanvasBg(isDark ? '#1e1e1e' : '#F2F2F2'); }, [isDark]);
 
-  // Pan to About section on initial load
+  // Pan to About section on initial load (instant — happens behind the loader)
   useEffect(() => {
-    panTo(620, 300);
+    panTo(620, 300, undefined, true);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keyboard shortcuts
@@ -112,7 +121,7 @@ function DesktopApp({ isDark, onToggleTheme }) {
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
         <LeftSidebar activePage={activePage} onPageClick={handlePageClick} selectedCard={selectedCard} onCardClick={handleCardClick} />
         <Canvas worldRef={worldRef} handlers={handlers} containerRef={containerRef} transformRef={transformRef}
-          selectedCard={selectedCard} onSelectCard={setSelectedCard} canvasBg={canvasBg}
+          selectedCard={selectedCard} onSelectCard={setSelectedCard} onOpenWork={onOpenWork} canvasBg={canvasBg}
           activeTool={activeTool} shapeType={shapeType} onCanvasClick={handleCanvasClick}
           canvasItems={canvasItems} setCanvasItems={setCanvasItems} onResetTool={resetTool} stickyColor={stickyColor} />
         <BottomToolbar activeTool={activeTool} shapeType={shapeType} stickyColor={stickyColor}

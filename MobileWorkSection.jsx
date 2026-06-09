@@ -10,11 +10,11 @@ const TAG_STYLES = {
   'Branding': { color: '#009EFF', bg: 'rgba(0, 158, 255, 0.10)' },
 };
 
-function MobileCard({ project }) {
+function MobileCard({ project, onOpen }) {
   return (
     <div
-      onClick={() => { if (project.url) window.open(project.url, '_blank'); }}
-      style={{ cursor: project.url ? 'pointer' : 'default' }}
+      onClick={() => onOpen && onOpen(project)}
+      style={{ cursor: 'pointer' }}
     >
       {/* Image */}
       <div style={{
@@ -66,11 +66,11 @@ function MobileCard({ project }) {
   );
 }
 
-export default function MobileWorkSection() {
+export default function MobileWorkSection({ onOpenWork }) {
   return (
     <div style={{ padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: 32 }}>
       {WORK_PROJECTS.map(project => (
-        <MobileCard key={project.id} project={project} />
+        <MobileCard key={project.id} project={project} onOpen={onOpenWork} />
       ))}
     </div>
   );

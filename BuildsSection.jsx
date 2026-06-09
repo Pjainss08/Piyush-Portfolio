@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { motion } from 'motion/react';
 
 const TAG_STYLES = {
   'Branding': { color: '#009EFF', bg: 'rgba(0, 158, 255, 0.10)' },
@@ -13,7 +14,7 @@ export const BUILDS_PROJECTS = [
     id: 'farfield',
     title: 'Farfield',
     description: 'Social store for creatives to sell their assets onchain and earn in crypto. Onchain Summer Awards Winner.',
-    image: '/build-farfield.webp',
+    image: '/builds/Farfield.webp',
     tags: ['Branding', 'Visual Design', 'Mini App Design'],
     url: 'https://farcaster.xyz/miniapps/9OlQm7ZO9S_M/farfield',
   },
@@ -21,7 +22,7 @@ export const BUILDS_PROJECTS = [
     id: 'dither-matrix',
     title: 'Dither Matrix',
     description: 'Dither tool made for designers with various effects to be used while adding custom colors.',
-    image: '/build-dither-matrix.webp',
+    image: '/builds/Dither%20Matrix.webp',
     tags: ['Visual Design', 'Product Design'],
     url: 'https://dithermatrix.piyushjain.in',
   },
@@ -29,7 +30,7 @@ export const BUILDS_PROJECTS = [
     id: 'pixel-pop',
     title: 'Pixel Pop Tool',
     description: 'Convert any image into pixel art with this tool. Customize the pixel size and color palette.',
-    image: '/pixel-pop.webp',
+    image: '/builds/Pixel%20Pop.webp',
     tags: ['Visual Design', 'Product Design'],
     url: 'https://pixelart.piyushjain.in',
   },
@@ -37,17 +38,23 @@ export const BUILDS_PROJECTS = [
     id: 'freetype-writer',
     title: 'Freetype Writer',
     description: 'A small space to write like a typewriter and export it as txt or a shareable envelope style PNG.',
-    image: '/typewriter.webp',
+    image: '/builds/typewriter.webp',
     tags: ['Visual Design', 'Product Design'],
     url: 'https://freetypewriter.piyushjain.in',
   },
 ];
 
-function BuildCard({ project, x, y, onSelect }) {
+function BuildCard({ project, x, y }) {
   return (
-    <div
+    <motion.div
       data-card
-      onClick={(e) => { e.stopPropagation(); onSelect && onSelect(`build-${project.id}`); }}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (project.url) window.open(project.url, '_blank', 'noopener,noreferrer');
+      }}
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.985 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 28 }}
       style={{
         position: 'absolute',
         left: x,
@@ -55,6 +62,7 @@ function BuildCard({ project, x, y, onSelect }) {
         width: 420,
         cursor: 'pointer',
         zIndex: 1,
+        willChange: 'transform',
       }}
     >
       <img
@@ -64,7 +72,6 @@ function BuildCard({ project, x, y, onSelect }) {
         style={{
           width: '100%',
           display: 'block',
-          borderRadius: 14,
           cursor: 'pointer',
         }}
       />
@@ -125,14 +132,14 @@ function BuildCard({ project, x, y, onSelect }) {
           );
         })}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function BuildsSection({ onSelectCard }) {
+function BuildsSection() {
   const gap = 40;
   const cardW = 420;
-  const startX = 2200;
+  const startX = 3200;
   const startY = 1700;
 
   const rowHeight = 520;
@@ -153,7 +160,6 @@ function BuildsSection({ onSelectCard }) {
           project={project}
           x={positions[i].x}
           y={positions[i].y}
-          onSelect={onSelectCard}
         />
       ))}
     </>

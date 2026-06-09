@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import MobileTopBar from './MobileTopBar.jsx';
 import MobileBottomSheet from './MobileBottomSheet.jsx';
 import MobileAbout from './MobileAbout.jsx';
@@ -6,7 +7,7 @@ import MobileWorkSection from './MobileWorkSection.jsx';
 import MobileBuildsSection from './MobileBuildsSection.jsx';
 import MobilePlayground from './MobilePlayground.jsx';
 
-export default function MobileShell({ isDark, onToggleTheme }) {
+export default function MobileShell({ isDark, onToggleTheme, onOpenWork }) {
   const [activePage, setActivePage] = useState('about');
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -30,14 +31,25 @@ export default function MobileShell({ isDark, onToggleTheme }) {
       {/* Content area */}
       <div style={{
         flex: 1,
-        overflow: (isPlayground || activePage === 'about') ? 'hidden' : 'auto',
+        overflow: 'auto',
         WebkitOverflowScrolling: 'touch',
-        background: isPlayground ? 'var(--figma-canvas, #f5f5f5)' : 'var(--figma-bg)',
+        background: 'var(--figma-bg)',
+        position: 'relative',
       }}>
-        {activePage === 'about' && <MobileAbout />}
-        {activePage === 'work' && <MobileWorkSection />}
-        {activePage === 'playground' && <MobilePlayground />}
-        {activePage === 'builds' && <MobileBuildsSection />}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={activePage}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {activePage === 'about' && <MobileAbout />}
+            {activePage === 'work' && <MobileWorkSection onOpenWork={onOpenWork} />}
+            {activePage === 'playground' && <MobilePlayground />}
+            {activePage === 'builds' && <MobileBuildsSection />}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Bottom Sheet */}

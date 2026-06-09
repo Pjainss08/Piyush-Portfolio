@@ -1,7 +1,8 @@
 import React, { memo } from 'react';
+import { motion } from 'motion/react';
 
 // Tag styles from Figma CSS
-const TAG_STYLES = {
+export const TAG_STYLES = {
   'Rebrand': { color: '#009EFF', bg: 'rgba(0, 158, 255, 0.10)' },
   'Visual Design': { color: '#FF5100', bg: 'rgba(255, 81, 0, 0.10)' },
   'Product Design': { color: '#00B25D', bg: 'rgba(0, 178, 93, 0.10)' },
@@ -9,54 +10,143 @@ const TAG_STYLES = {
   'Mini App Design': { color: '#FF2ADF', bg: 'rgba(255, 42, 223, 0.10)' },
 };
 
-export const WORK_PROJECTS = [
+const PLACEHOLDER_PARA = "Jorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia";
+
+const RAW_WORK_PROJECTS = [
   {
     id: 'bento',
     title: 'Bento.fun',
-    description: 'Bento.fun is a social layer for prediction market. Backed by Yzi Labs',
-    image: '/work-bento.webp',
+    description: 'Bento.fun is a social prediction market platform built to turn predictions into playable, repeatable community experiences',
+    image: '/work/bento/card.webp',
+    logo: '/work/bento/logo.webp',
     tags: ['Rebrand', 'Visual Design', 'Product Design'],
     url: 'https://bento.fun',
-  },
-  {
-    id: 'inner-circle',
-    title: 'Inner Circle',
-    description: 'Inner Circle is a community of 10,000+ founders, creators, developers, designers on Base',
-    image: '/work-inner-circle.webp',
-    tags: ['Website Design', 'Visual Design'],
-    url: 'https://innercircle.so',
+    role: 'Brand Designer · Product Designer',
+    problem: 'Prediction markets focus on bets, not behaviour. They lack social features and shared memory, making them overwhelming and exclusive. Bento aims to be the opposite.',
+    brandTiles: [
+      '/work/bento/tile-orange.webp',
+      '/work/bento/tile-black.webp',
+      '/work/bento/tile-green.webp',
+      '/work/bento/tile-blue.webp',
+    ],
+    approach: [
+      'Built visual identity to make predictions fun, social, and accessible to all.',
+      'Designed website to be inviting and clear, matching product personality.',
+      'Led product design for alpha MVP, including user-generated markets and contests.',
+      'Focused on community-driven flexible gameplay.',
+      'Created launch videos and social creatives to extend brand energy.',
+    ],
+    appHero: '/work/bento/app-hero.webp',
+    overview: null,
+    details: null,
+    video: '/work/bento/website-video.mp4',
+    gallery: [
+      '/work/bento/all-tournaments.webp',
+      '/work/bento/tournament.webp',
+      '/work/bento/create-details.webp',
+    ],
   },
   {
     id: 'velar',
     title: 'Velar',
     description: 'Velar is a DeFi liquidity protocol built on Bitcoin. Trade, provide liquidity, and earn rewards',
-    image: '/work-velar.webp',
+    image: '/work/velar/card.webp',
+    logo: '/work/velar/logo.webp',
     tags: ['Website Design', 'Product Design'],
     url: 'https://velar.co',
-  },
-  {
-    id: 'emerge',
-    title: 'Emerge',
-    description: 'Emerge is a creative platform for visual storytelling and mini app experiences',
-    image: '/work-emerge.webp',
-    tags: ['Visual Design', 'Mini App Design'],
-    url: 'https://farcaster.xyz/miniapps/pmZbrBBIA6wT/emerge',
+    role: 'Product Designer · Website Designer',
+    problem: "Bitcoin has the most secure and trusted network in the world but almost no usable DeFi interface. Users had the asset, but nowhere to actually put it to work. Velar needed a product experience that made Bitcoin DeFi feel as accessible as any modern DeFi platform.",
+    problemImage: '/work/velar/v3.webp',
+    approach: [
+      "Designed the product interface across Velar's core suite — DEX, Perpetual DEX, and Launchpad.",
+      'Built the marketing website to communicate a complex multi-product protocol clearly and confidently.',
+      'Kept the visual language premium and technical — matching the weight of building on Bitcoin.',
+    ],
+    overview: null,
+    details: null,
+    gallery: [
+      '/work/velar/hero.webp',
+      '/work/velar/portfolio.webp',
+      '/work/velar/design-01.webp',
+      '/work/velar/design-03.webp',
+      '/work/velar/design-04.webp',
+      '/work/velar/footer.webp',
+    ],
   },
   {
     id: 'crowwd',
     title: 'Crowwd',
     description: 'Crowwd is a platform for crowdfunding and community-driven project building',
-    image: '/work-crowwd.webp',
+    image: '/work/crowwd/card.webp',
+    logo: '/work/crowwd/logo.webp',
     tags: ['Product Design', 'Visual Design'],
     url: null,
+    role: 'Product Designer',
+    problem: "Most crowdfunding platforms are cluttered and complex. Add crypto and onchain payments to that and most people just drop off. Crowwwd needed to feel nothing like that.",
+    problemImage: '/work/crowwd/bento.webp',
+    approach: [
+      "Designed a layout that's clean and easy to scan, no overwhelming UI, no unnecessary steps.",
+      'Cut out crypto jargon so anyone could understand what they\'re doing and why.',
+      'Made onchain payments feel as simple as any regular transaction.',
+      'Clear, intentional screens that guide users without friction.',
+    ],
+    afterApproachImage: '/work/crowwd/after-approach.webp',
+    overview: null,
+    details: null,
+    gallery: [
+      '/work/crowwd/cover.webp',
+      '/work/crowwd/profile.webp',
+      '/work/crowwd/project-creation.webp',
+      '/work/crowwd/project-info.webp',
+    ],
+  },
+  {
+    id: 'inner-circle',
+    title: 'Inner Circle',
+    description: 'Inner Circle is a community of 10,000+ founders, creators, developers, designers on Base',
+    image: '/work/inner-circle/card.webp',
+    logo: '/work/inner-circle/logo.webp',
+    tags: ['Website Design', 'Visual Design'],
+    url: 'https://innercircle.so',
+    role: 'Visual Designer · Website Designer',
+    overview: null,
+    details: null,
+    approach: [
+      'Rebuilt the visual identity to match the pivot from Web3 to AI — same energy, new direction.',
+      'Designed the full website from scratch and developed it using Claude.',
+    ],
+    video: '/work/inner-circle/website.mp4',
+    gallery: [
+      '/work/inner-circle/cards.webp',
+      '/work/inner-circle/footer.webp',
+    ],
+    videoBottom: '/work/inner-circle/full-tour.mp4',
+  },
+  {
+    id: 'emerge',
+    title: 'Emerge',
+    description: 'Emerge is a creative platform for visual storytelling and mini app experiences',
+    image: '/work/emerge/card.webp',
+    tags: ['Visual Design', 'Mini App Design'],
+    url: 'https://farcaster.xyz/miniapps/pmZbrBBIA6wT/emerge',
   },
 ];
 
-function WorkCard({ project, x, y, onSelect }) {
+export const WORK_PROJECTS = RAW_WORK_PROJECTS.map(p => ({
+  ...p,
+  overview: p.overview === null ? null : (p.overview || PLACEHOLDER_PARA),
+  details: p.details === null ? null : (p.details || PLACEHOLDER_PARA),
+  gallery: p.gallery === null ? null : (p.gallery || [p.image, p.image, p.image, p.image]),
+}));
+
+function WorkCard({ project, x, y, onOpen }) {
   return (
-    <div
+    <motion.div
       data-card
-      onClick={(e) => { e.stopPropagation(); onSelect && onSelect(`work-${project.id}`); }}
+      onClick={(e) => { e.stopPropagation(); onOpen && onOpen(project); }}
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.985 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 28 }}
       style={{
         position: 'absolute',
         left: x,
@@ -65,6 +155,7 @@ function WorkCard({ project, x, y, onSelect }) {
         marginRight: 85,
         cursor: 'pointer',
         zIndex: 1,
+        willChange: 'transform',
       }}
     >
       {/* Image — no wrapper, just the image with natural aspect ratio */}
@@ -75,7 +166,6 @@ function WorkCard({ project, x, y, onSelect }) {
         style={{
           width: '100%',
           display: 'block',
-          borderRadius: 14,
           cursor: 'pointer',
         }}
       />
@@ -139,11 +229,11 @@ function WorkCard({ project, x, y, onSelect }) {
           );
         })}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function WorkSection({ onSelectCard }) {
+function WorkSection({ onOpenWork }) {
   const gap = 40;
   const cardW = 420;
   const startX = 2200;
@@ -168,7 +258,7 @@ function WorkSection({ onSelectCard }) {
           project={project}
           x={positions[i].x}
           y={positions[i].y}
-          onSelect={onSelectCard}
+          onOpen={onOpenWork}
         />
       ))}
     </>

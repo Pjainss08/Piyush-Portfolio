@@ -99,7 +99,7 @@ export default function useCanvas(initialTransform = { x: -50, y: -50, scale: 0.
     containerRef.current?.classList.remove('is-panning');
   }, []);
 
-  const panTo = useCallback((targetX, targetY, targetScale) => {
+  const panTo = useCallback((targetX, targetY, targetScale, instant = false) => {
     stopAnimation();
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -107,8 +107,14 @@ export default function useCanvas(initialTransform = { x: -50, y: -50, scale: 0.
     const scale = targetScale || 0.7;
     const destX = rect.width / 2 - targetX * scale;
     const destY = rect.height / 2 - targetY * scale;
-    const from = { ...transformRef.current };
 
+    if (instant) {
+      transformRef.current = { x: destX, y: destY, scale };
+      applyTransform();
+      return;
+    }
+
+    const from = { ...transformRef.current };
     animRef.current = animate(0, 1, {
       duration: 0.7,
       ease: [0.22, 1, 0.36, 1],
