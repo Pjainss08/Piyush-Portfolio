@@ -91,7 +91,7 @@ function MobileDraggableItem({ item, collageWidth, collageHeight }) {
 }
 
 const BIO_SHORT = "Hello I'm Piyush Jain, brand & product designer, builder, and someone who loves making things pretty. Mostly working around AI and new ideas these days.";
-const BIO_LONG = "I'm 22 and have been designing for about five years, mostly products across Web2, Web3, and e-commerce. These days I'm deep in AI, building small tools for myself and trying to get genuinely good at it.\n\nNever the studious kid, but always curious about design and how things work. Making things pretty is something I've loved for as long as I can remember.\n\nOutside work: travel when I can, watch a lot of movies, keep good music on most of the day. Into watches, tech products, and happy to spend an hour critiquing a design that didn't need to be that bad.";
+const BIO_LONG = "I'm 22, designing for about five years across verticals. These days I'm deep in AI, building small tools for myself and trying to get genuinely good at it. Never the studious kid, but always curious about design and how things work. Outside work: travel when I can, lots of movies, good music on most of the day, and happy to spend an hour critiquing a design that didn't need to be that bad.";
 
 export default function MobileAbout() {
   const containerWidth = typeof window !== 'undefined' ? window.innerWidth : 375;
