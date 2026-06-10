@@ -108,6 +108,32 @@ export default function RightSidebar({ selectedCard, canvasBg, onCanvasBgChange,
         {card ? <CardProperties card={card} /> : <PageProperties canvasBg={canvasBg} onCanvasBgChange={onCanvasBgChange} />}
       </div>
 
+      {/* Wall of Portfolios badge */}
+      <a
+        href="https://www.wallofportfolios.in/portfolios/piyush-jain/"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: 'block',
+          padding: '12px',
+          borderTop: '1px solid var(--figma-border)',
+          textAlign: 'center',
+        }}
+        title="Featured on Wall of Portfolios · 2026"
+      >
+        <img
+          src="/about/wop-badge.svg"
+          alt="Featured on Wall of Portfolios · 2026"
+          style={{
+            width: '100%',
+            maxWidth: 130,
+            height: 'auto',
+            display: 'block',
+            margin: '0 auto',
+          }}
+        />
+      </a>
+
       {/* Footer */}
       <div style={{
         padding: '12px',

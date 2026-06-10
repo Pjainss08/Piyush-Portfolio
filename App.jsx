@@ -5,6 +5,7 @@ import Canvas from './Canvas.jsx';
 import BottomToolbar from './BottomToolbar.jsx';
 import useCanvas from './useCanvas.js';
 import useIsMobile from './useIsMobile.js';
+import useNarrowDesktop from './useNarrowDesktop.js';
 import MobileShell from './MobileShell.jsx';
 import WorkModal from './WorkModal.jsx';
 import Loader from './Loader.jsx';
@@ -53,6 +54,7 @@ export default function App() {
 }
 
 function DesktopApp({ isDark, onToggleTheme, onOpenWork }) {
+  const narrowDesktop = useNarrowDesktop();
   const { worldRef, handlers, containerRef, transformRef, panTo } = useCanvas();
   const [activePage, setActivePage] = useState('about');
   const [selectedCard, setSelectedCard] = useState(null);
@@ -119,15 +121,19 @@ function DesktopApp({ isDark, onToggleTheme, onOpenWork }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
-        <LeftSidebar activePage={activePage} onPageClick={handlePageClick} selectedCard={selectedCard} onCardClick={handleCardClick} />
+        {!narrowDesktop && (
+          <LeftSidebar activePage={activePage} onPageClick={handlePageClick} selectedCard={selectedCard} onCardClick={handleCardClick} />
+        )}
         <Canvas worldRef={worldRef} handlers={handlers} containerRef={containerRef} transformRef={transformRef}
           selectedCard={selectedCard} onSelectCard={setSelectedCard} onOpenWork={onOpenWork} canvasBg={canvasBg}
           activeTool={activeTool} shapeType={shapeType} onCanvasClick={handleCanvasClick}
           canvasItems={canvasItems} setCanvasItems={setCanvasItems} onResetTool={resetTool} stickyColor={stickyColor} />
         <BottomToolbar activeTool={activeTool} shapeType={shapeType} stickyColor={stickyColor}
           onToolChange={setActiveTool} onShapeTypeChange={setShapeType} onStickyColorChange={setStickyColor} />
-        <RightSidebar selectedCard={selectedCard} canvasBg={canvasBg} onCanvasBgChange={setCanvasBg}
-          isDark={isDark} onToggleTheme={onToggleTheme} />
+        {!narrowDesktop && (
+          <RightSidebar selectedCard={selectedCard} canvasBg={canvasBg} onCanvasBgChange={setCanvasBg}
+            isDark={isDark} onToggleTheme={onToggleTheme} />
+        )}
       </div>
     </div>
   );

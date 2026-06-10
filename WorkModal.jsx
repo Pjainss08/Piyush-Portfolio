@@ -146,7 +146,7 @@ export default function WorkModal({ project, onClose, onNavigate }) {
               : { type: 'spring', damping: 26, stiffness: 280 }}
             style={{
               width: isMobile ? '100%' : 'min(760px, 100%)',
-              height: isMobile ? '100vh' : '90vh',
+              height: isMobile ? '100dvh' : '90vh',
               background: 'var(--figma-surface)',
               borderRadius: isMobile ? 0 : 12,
               boxShadow: isMobile
@@ -210,6 +210,7 @@ export default function WorkModal({ project, onClose, onNavigate }) {
               flex: 1,
               overflow: 'auto',
               WebkitOverflowScrolling: 'touch',
+              overscrollBehavior: 'contain',
             }}
           >
             <div style={{
