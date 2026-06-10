@@ -10,7 +10,7 @@ const TAG_STYLES = {
   'Branding': { color: '#009EFF', bg: 'rgba(0, 158, 255, 0.10)' },
 };
 
-function MobileCard({ project, onOpen }) {
+function MobileCard({ project, onOpen, index = 0 }) {
   return (
     <div
       onClick={() => onOpen && onOpen(project)}
@@ -22,12 +22,17 @@ function MobileCard({ project, onOpen }) {
         overflow: 'hidden',
         boxShadow: '0 1px 4px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(0,0,0,0.06)',
         background: '#f0f0f0',
+        aspectRatio: '488 / 382',
       }}>
         <img
           src={project.image}
           alt={project.title}
-          style={{ width: '100%', display: 'block' }}
-          loading="lazy"
+          width={488}
+          height={382}
+          decoding="async"
+          fetchpriority={index < 2 ? 'high' : 'auto'}
+          loading={index < 2 ? 'eager' : 'lazy'}
+          style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover' }}
         />
       </div>
 
@@ -69,8 +74,8 @@ function MobileCard({ project, onOpen }) {
 export default function MobileWorkSection({ onOpenWork }) {
   return (
     <div style={{ padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: 32 }}>
-      {WORK_PROJECTS.map(project => (
-        <MobileCard key={project.id} project={project} onOpen={onOpenWork} />
+      {WORK_PROJECTS.map((project, i) => (
+        <MobileCard key={project.id} project={project} onOpen={onOpenWork} index={i} />
       ))}
     </div>
   );

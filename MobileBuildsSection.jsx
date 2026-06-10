@@ -10,7 +10,7 @@ const TAG_STYLES = {
   'Branding': { color: '#009EFF', bg: 'rgba(0, 158, 255, 0.10)' },
 };
 
-function MobileCard({ project }) {
+function MobileCard({ project, index = 0 }) {
   return (
     <div
       onClick={() => { if (project.url) window.open(project.url, '_blank'); }}
@@ -20,8 +20,18 @@ function MobileCard({ project }) {
         borderRadius: 14, overflow: 'hidden',
         boxShadow: '0 1px 4px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(0,0,0,0.06)',
         background: '#f0f0f0',
+        aspectRatio: '488 / 382',
       }}>
-        <img src={project.image} alt={project.title} style={{ width: '100%', display: 'block' }} loading="lazy" />
+        <img
+          src={project.image}
+          alt={project.title}
+          width={488}
+          height={382}
+          decoding="async"
+          fetchpriority={index < 2 ? 'high' : 'auto'}
+          loading={index < 2 ? 'eager' : 'lazy'}
+          style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover' }}
+        />
       </div>
       <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--figma-text)', marginTop: 14, lineHeight: 1.2 }}>
         {project.title}
@@ -50,8 +60,8 @@ function MobileCard({ project }) {
 export default function MobileBuildsSection() {
   return (
     <div style={{ padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: 32 }}>
-      {BUILDS_PROJECTS.map(project => (
-        <MobileCard key={project.id} project={project} />
+      {BUILDS_PROJECTS.map((project, i) => (
+        <MobileCard key={project.id} project={project} index={i} />
       ))}
     </div>
   );
