@@ -124,11 +124,28 @@ const RAW_WORK_PROJECTS = [
   },
   {
     id: 'emerge',
-    title: 'Emerge',
-    description: 'Emerge is a creative platform for visual storytelling and mini app experiences',
+    title: 'First Dollar',
+    description: 'A curated talent network of 200k+ creators, designers, developers, testers, marketers, and community builders.',
     image: '/work/emerge/card.webp',
-    tags: ['Visual Design', 'Mini App Design'],
+    logo: '/work/emerge/logo.webp',
+    tags: ['Visual Design', 'Product Design'],
     url: 'https://farcaster.xyz/miniapps/pmZbrBBIA6wT/emerge',
+    role: 'Product Designer',
+    problem: "First Dollar was built for Web3 builders but the vision was bigger than that. We wanted anyone on the internet to be able to join, find work, and earn. The existing product felt too niche, too crypto-native to make that leap.",
+    problemImage: '/work/emerge/sidebar.webp',
+    approach: [
+      "Redesigned the full product with a new visual theme — minimal, clean, and accessible without losing the existing brand identity.",
+      "Designed the Verified Talent feature giving skilled builders and creators a way to stand out and get matched with the right opportunities.",
+      "Built out the profile and showcase feature so every builder has a page that tells their story, proves their work, and can be shared anywhere on the internet.",
+    ],
+    overview: null,
+    details: null,
+    gallery: [
+      '/work/emerge/showcase.webp',
+      '/work/emerge/feed.webp',
+      '/work/emerge/contest.webp',
+      '/work/emerge/hero.webp',
+    ],
   },
 ];
 
