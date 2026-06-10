@@ -129,7 +129,7 @@ const RAW_WORK_PROJECTS = [
     image: '/work/emerge/card.webp',
     logo: '/work/emerge/logo.webp',
     tags: ['Visual Design', 'Product Design'],
-    url: 'https://farcaster.xyz/miniapps/pmZbrBBIA6wT/emerge',
+    url: 'https://firstdollar.money/',
     role: 'Product Designer',
     problem: "First Dollar was built for Web3 builders but the vision was bigger than that. We wanted anyone on the internet to be able to join, find work, and earn. The existing product felt too niche, too crypto-native to make that leap.",
     problemImage: '/work/emerge/sidebar.webp',
