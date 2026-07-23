@@ -85,7 +85,6 @@ function WorkedWithSection() {
         <div style={{ display: 'flex', gap: 36, alignItems: 'center' }}>
           <img src="/clients/marico.webp" alt="Marico" draggable={false} style={logoStyle(47)} />
           <img src="/clients/bricx.webp" alt="Bricx" draggable={false} style={logoStyle(35)} />
-          <img src="/clients/dacoit.svg" alt="Dacoit" draggable={false} style={logoStyle(32)} />
         </div>
       </div>
     </div>
