@@ -34,24 +34,39 @@ const CanvasStickyItem = memo(function CanvasStickyItem({ item, isSelected, onSe
     const scale = transformRef.current.scale;
     let lastX = item.x;
     let lastY = item.y;
+    let lastDx = 0;
+    let lastDy = 0;
+    let frame = null;
     let moved = false;
 
     const onMove = (ev) => {
       const dx = (ev.clientX - startMouse.x) / scale;
       const dy = (ev.clientY - startMouse.y) / scale;
       if (!moved && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) moved = true;
+      lastDx = dx;
+      lastDy = dy;
       lastX = startItem.x + dx;
       lastY = startItem.y + dy;
-      if (elRef.current) {
-        elRef.current.style.left = lastX + 'px';
-        elRef.current.style.top = lastY + 'px';
+      if (frame === null) {
+        frame = requestAnimationFrame(() => {
+          frame = null;
+          if (elRef.current) elRef.current.style.translate = `${lastDx}px ${lastDy}px`;
+        });
       }
     };
 
     const onUp = () => {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
-      if (moved) onUpdate(item.id, { x: lastX, y: lastY });
+      if (frame !== null) cancelAnimationFrame(frame);
+      if (moved) {
+        if (elRef.current) {
+          elRef.current.style.left = `${lastX}px`;
+          elRef.current.style.top = `${lastY}px`;
+          elRef.current.style.translate = 'none';
+        }
+        onUpdate(item.id, { x: lastX, y: lastY });
+      }
     };
 
     window.addEventListener('mousemove', onMove);
@@ -87,7 +102,7 @@ const CanvasStickyItem = memo(function CanvasStickyItem({ item, isSelected, onSe
         transform: `rotate(${rotation}deg) translateZ(0)`,
         cursor: editing ? 'text' : 'grab',
         userSelect: 'none',
-        willChange: 'left, top',
+        willChange: 'translate',
       }}
     >
       <div style={{
@@ -188,24 +203,39 @@ const CanvasShapeItem = memo(function CanvasShapeItem({ item, isSelected, onSele
     const scale = transformRef.current.scale;
     let lastX = item.x;
     let lastY = item.y;
+    let lastDx = 0;
+    let lastDy = 0;
+    let frame = null;
     let moved = false;
 
     const onMove = (ev) => {
       const dx = (ev.clientX - startMouse.x) / scale;
       const dy = (ev.clientY - startMouse.y) / scale;
       if (!moved && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) moved = true;
+      lastDx = dx;
+      lastDy = dy;
       lastX = startItem.x + dx;
       lastY = startItem.y + dy;
-      if (elRef.current) {
-        elRef.current.style.left = lastX + 'px';
-        elRef.current.style.top = lastY + 'px';
+      if (frame === null) {
+        frame = requestAnimationFrame(() => {
+          frame = null;
+          if (elRef.current) elRef.current.style.translate = `${lastDx}px ${lastDy}px`;
+        });
       }
     };
 
     const onUp = () => {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
-      if (moved) onUpdate(item.id, { x: lastX, y: lastY });
+      if (frame !== null) cancelAnimationFrame(frame);
+      if (moved) {
+        if (elRef.current) {
+          elRef.current.style.left = `${lastX}px`;
+          elRef.current.style.top = `${lastY}px`;
+          elRef.current.style.translate = 'none';
+        }
+        onUpdate(item.id, { x: lastX, y: lastY });
+      }
     };
 
     window.addEventListener('mousemove', onMove);
@@ -229,7 +259,7 @@ const CanvasShapeItem = memo(function CanvasShapeItem({ item, isSelected, onSele
           transform: `rotate(${angle}deg) translateZ(0)`,
           transformOrigin: '0 0',
           cursor: 'grab',
-          willChange: 'left, top',
+          willChange: 'translate',
         }}
       />
     );
@@ -249,7 +279,7 @@ const CanvasShapeItem = memo(function CanvasShapeItem({ item, isSelected, onSele
         background: '#e5e5e5',
         cursor: 'grab',
         transform: 'translateZ(0)',
-        willChange: 'left, top',
+        willChange: 'translate',
       }}
     >
       {isSelected && (
@@ -314,6 +344,12 @@ export default function Canvas({
 }) {
   const [dragState, setDragState] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
+  const dragFrameRef = useRef(null);
+  const pendingDragPointRef = useRef(null);
+
+  useEffect(() => () => {
+    if (dragFrameRef.current !== null) cancelAnimationFrame(dragFrameRef.current);
+  }, []);
 
   useEffect(() => {
     const handler = (e) => {
@@ -340,6 +376,7 @@ export default function Canvas({
     if (e.target.closest('[data-card]') || e.target.closest('[data-no-pan]')) return;
     if (activeTool === 'shape' && e.button === 0) {
       const { x, y } = getWorldCoords(e);
+      pendingDragPointRef.current = null;
       setDragState({ startX: x, startY: y, currentX: x, currentY: y, shapeType });
       e.preventDefault();
     }
@@ -348,13 +385,28 @@ export default function Canvas({
   const handleMouseMove = useCallback((e) => {
     if (dragState) {
       const { x, y } = getWorldCoords(e);
-      setDragState(prev => prev ? { ...prev, currentX: x, currentY: y } : null);
+      pendingDragPointRef.current = { currentX: x, currentY: y };
+      if (dragFrameRef.current === null) {
+        dragFrameRef.current = requestAnimationFrame(() => {
+          dragFrameRef.current = null;
+          const point = pendingDragPointRef.current;
+          if (point) setDragState(prev => prev ? { ...prev, ...point } : null);
+        });
+      }
     }
   }, [dragState, getWorldCoords]);
 
   const handleMouseUp = useCallback(() => {
     if (dragState) {
-      const { startX, startY, currentX, currentY, shapeType: st } = dragState;
+      if (dragFrameRef.current !== null) {
+        cancelAnimationFrame(dragFrameRef.current);
+        dragFrameRef.current = null;
+      }
+      const finalDragState = pendingDragPointRef.current
+        ? { ...dragState, ...pendingDragPointRef.current }
+        : dragState;
+      pendingDragPointRef.current = null;
+      const { startX, startY, currentX, currentY, shapeType: st } = finalDragState;
       const w = currentX - startX;
       const h = currentY - startY;
       if (Math.abs(w) > 5 || Math.abs(h) > 5) {

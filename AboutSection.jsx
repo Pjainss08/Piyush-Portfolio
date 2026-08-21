@@ -27,24 +27,39 @@ const DraggableItem = memo(function DraggableItem({ item, onUpdate, transformRef
     const scale = transformRef.current.scale;
     let lastX = item.x;
     let lastY = item.y;
+    let lastDx = 0;
+    let lastDy = 0;
+    let frame = null;
     let moved = false;
 
     const onMove = (ev) => {
       const dx = (ev.clientX - startMouse.x) / scale;
       const dy = (ev.clientY - startMouse.y) / scale;
       if (!moved && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) moved = true;
+      lastDx = dx;
+      lastDy = dy;
       lastX = startItem.x + dx;
       lastY = startItem.y + dy;
-      if (elRef.current) {
-        elRef.current.style.left = lastX + 'px';
-        elRef.current.style.top = lastY + 'px';
+      if (frame === null) {
+        frame = requestAnimationFrame(() => {
+          frame = null;
+          if (elRef.current) elRef.current.style.translate = `${lastDx}px ${lastDy}px`;
+        });
       }
     };
 
     const onUp = () => {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
-      if (moved) onUpdate(item.id, { x: lastX, y: lastY });
+      if (frame !== null) cancelAnimationFrame(frame);
+      if (moved) {
+        if (elRef.current) {
+          elRef.current.style.left = `${lastX}px`;
+          elRef.current.style.top = `${lastY}px`;
+          elRef.current.style.translate = 'none';
+        }
+        onUpdate(item.id, { x: lastX, y: lastY });
+      }
     };
 
     window.addEventListener('mousemove', onMove);
@@ -75,7 +90,7 @@ const DraggableItem = memo(function DraggableItem({ item, onUpdate, transformRef
           padding: 4,
           border: '1px solid #eee',
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          willChange: 'left, top',
+          willChange: 'translate',
         }}
       >
         <img src={item.src} alt="" draggable={false} style={{ width: '100%', borderRadius: 8, display: 'block' }} />
@@ -102,7 +117,7 @@ const DraggableItem = memo(function DraggableItem({ item, onUpdate, transformRef
         cursor: isDraggable ? 'grab' : 'default',
         zIndex: item.zIndex,
         userSelect: 'none',
-        willChange: 'left, top',
+        willChange: 'translate',
       }}
     />
   );

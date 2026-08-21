@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PAGES, SOCIAL_LINKS } from './canvasData.js';
 
@@ -29,6 +29,24 @@ const socialIcons = {
 
 export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageChange, isDark, onToggleTheme }) {
   const [emailCopied, setEmailCopied] = useState(false);
+  const sheetRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const previousFocus = document.activeElement;
+    const focusFrame = requestAnimationFrame(() => {
+      sheetRef.current?.querySelector('button, a')?.focus();
+    });
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      cancelAnimationFrame(focusFrame);
+      window.removeEventListener('keydown', handleKeyDown);
+      previousFocus?.focus?.();
+    };
+  }, [isOpen, onClose]);
 
   return (
     <AnimatePresence>
@@ -36,6 +54,11 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
         <>
           {/* Backdrop */}
           <motion.div
+            ref={sheetRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Portfolio navigation"
+            tabIndex={-1}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -63,6 +86,7 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
               padding: '12px 24px 32px',
               paddingBottom: 'max(32px, env(safe-area-inset-bottom))',
               maxHeight: '70vh',
+              overscrollBehavior: 'contain',
             }}
           >
             {/* Drag handle */}
@@ -72,12 +96,14 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
 
             {/* Page nav items — no dividers */}
             {PAGES.map(page => (
-              <div
+              <button
+                type="button"
                 key={page.id}
                 onClick={() => onPageChange(page.id)}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '14px 0', cursor: 'pointer',
+                  padding: '14px 0', cursor: 'pointer', width: '100%',
+                  background: 'none', border: 0, font: 'inherit', textAlign: 'start',
                 }}
               >
                 <span style={{
@@ -91,22 +117,26 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
                     <path d="M5 12l5 5L20 7" />
                   </svg>
                 )}
-              </div>
+              </button>
             ))}
 
             {/* Dark Mode row with toggle */}
-            <div
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isDark}
               onClick={onToggleTheme}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '14px 0', cursor: 'pointer',
+                padding: '14px 0', cursor: 'pointer', width: '100%',
+                background: 'none', border: 0, font: 'inherit', textAlign: 'start',
               }}
             >
               <span style={{
                 fontSize: 18, fontWeight: 400,
                 color: 'var(--figma-text-secondary)',
               }}>
-                Dark Mode
+                Dark mode
               </span>
               {/* Toggle switch */}
               <div style={{
@@ -125,34 +155,52 @@ export default function MobileBottomSheet({ isOpen, onClose, activePage, onPageC
                   boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                 }} />
               </div>
-            </div>
+            </button>
 
             {/* Social icons row at bottom */}
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 28,
               paddingTop: 16,
             }}>
-              {SOCIAL_LINKS.map((link, i) => (
-                <div
-                  key={i}
-                  onClick={() => {
-                    if (link.email) {
+              {SOCIAL_LINKS.map((link, i) => {
+                const sharedStyle = {
+                  color: emailCopied && link.email ? '#0ACF83' : 'var(--figma-text-secondary)',
+                  cursor: 'pointer', transition: 'color 0.15s ease-out',
+                  display: 'grid', placeItems: 'center', width: 44, height: 44,
+                  background: 'none', border: 0, padding: 0,
+                };
+
+                if (link.email) {
+                  return (
+                    <button
+                      type="button"
+                      key={i}
+                      aria-label="Copy email address"
+                      onClick={() => {
                       navigator.clipboard.writeText(link.email);
                       setEmailCopied(true);
                       setTimeout(() => setEmailCopied(false), 2000);
-                    } else {
-                      window.open(link.url, '_blank');
-                    }
-                  }}
-                  style={{
-                    color: emailCopied && link.email ? '#0ACF83' : 'var(--figma-text-secondary)',
-                    cursor: 'pointer', transition: 'color 0.2s',
-                    display: 'flex',
-                  }}
-                >
-                  {socialIcons[link.label]}
-                </div>
-              ))}
+                      }}
+                      style={sharedStyle}
+                    >
+                      {socialIcons[link.label]}
+                    </button>
+                  );
+                }
+
+                return (
+                  <a
+                    key={i}
+                    href={link.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={link.label}
+                    style={sharedStyle}
+                  >
+                    {socialIcons[link.label]}
+                  </a>
+                );
+              })}
             </div>
           </motion.div>
 

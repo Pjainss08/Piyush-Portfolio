@@ -23,13 +23,18 @@ export default function MobileTopBar({ onMenuOpen }) {
       </div>
 
       {/* Hamburger */}
-      <div onClick={onMenuOpen} style={{ cursor: 'pointer', padding: 4, color: 'var(--figma-text)' }}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <button
+        type="button"
+        aria-label="Open navigation"
+        onClick={onMenuOpen}
+        style={{ cursor: 'pointer', padding: 8, margin: -4, color: 'var(--figma-text)', background: 'none', border: 0, display: 'grid', placeItems: 'center' }}
+      >
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <line x1="4" y1="7" x2="20" y2="7" />
           <line x1="4" y1="12" x2="20" y2="12" />
           <line x1="4" y1="17" x2="20" y2="17" />
         </svg>
-      </div>
+      </button>
     </div>
   );
 }

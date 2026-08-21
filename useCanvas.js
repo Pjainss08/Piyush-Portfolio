@@ -15,28 +15,39 @@ export default function useCanvas(initialTransform = { x: -50, y: -50, scale: 0.
   const startPos = useRef({ x: 0, y: 0 });
   const startTransform = useRef(initialTransform);
   const animRef = useRef(null);
+  const frameRef = useRef(null);
 
-  const applyTransform = useCallback(() => {
+  const flushTransform = useCallback(() => {
+    frameRef.current = null;
     const t = transformRef.current;
     if (worldRef.current) {
-      worldRef.current.style.transform = `translate(${t.x}px, ${t.y}px) scale(${t.scale})`;
+      worldRef.current.style.transform = `translate3d(${t.x}px, ${t.y}px, 0) scale(${t.scale})`;
     }
   }, []);
 
+  // Pointer and wheel events can arrive much faster than the display refreshes.
+  // Collapse them into one compositor update per animation frame.
+  const applyTransform = useCallback(() => {
+    if (frameRef.current === null) {
+      frameRef.current = requestAnimationFrame(flushTransform);
+    }
+  }, [flushTransform]);
+
+  const commitTransform = useCallback(() => {
+    if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    flushTransform();
+  }, [flushTransform]);
+
   // Apply once on mount
-  useEffect(() => { applyTransform(); }, [applyTransform]);
+  useEffect(() => {
+    commitTransform();
+    return () => {
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    };
+  }, [commitTransform]);
 
   const stopAnimation = useCallback(() => {
     if (animRef.current) { animRef.current.stop?.(); animRef.current = null; }
-  }, []);
-
-  // Prevent browser-level zoom (Cmd+scroll / pinch)
-  useEffect(() => {
-    const preventBrowserZoom = (e) => {
-      if (e.ctrlKey || e.metaKey) e.preventDefault();
-    };
-    document.addEventListener('wheel', preventBrowserZoom, { passive: false });
-    return () => document.removeEventListener('wheel', preventBrowserZoom);
   }, []);
 
   // Native wheel listener — writes directly to DOM, no React re-render
@@ -54,8 +65,12 @@ export default function useCanvas(initialTransform = { x: -50, y: -50, scale: 0.
       const cursorY = e.clientY - rect.top;
 
       const prev = transformRef.current;
+      const modeMultiplier = e.deltaMode === WheelEvent.DOM_DELTA_LINE
+        ? 16
+        : e.deltaMode === WheelEvent.DOM_DELTA_PAGE ? rect.height : 1;
+      const delta = e.deltaY * modeMultiplier;
       const zoomFactor = e.ctrlKey || e.metaKey ? 0.01 : 0.001;
-      const newScale = clamp(prev.scale * (1 - e.deltaY * zoomFactor), 0.05, 4);
+      const newScale = clamp(prev.scale * Math.exp(-delta * zoomFactor), 0.05, 4);
       const ratio = newScale / prev.scale;
 
       transformRef.current = {
@@ -108,9 +123,10 @@ export default function useCanvas(initialTransform = { x: -50, y: -50, scale: 0.
     const destX = rect.width / 2 - targetX * scale;
     const destY = rect.height / 2 - targetY * scale;
 
-    if (instant) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (instant || reduceMotion) {
       transformRef.current = { x: destX, y: destY, scale };
-      applyTransform();
+      commitTransform();
       return;
     }
 
@@ -127,7 +143,7 @@ export default function useCanvas(initialTransform = { x: -50, y: -50, scale: 0.
         applyTransform();
       },
     });
-  }, [stopAnimation, applyTransform]);
+  }, [stopAnimation, applyTransform, commitTransform]);
 
   return {
     worldRef,

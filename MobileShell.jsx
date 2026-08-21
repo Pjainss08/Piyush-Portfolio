@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import MobileTopBar from './MobileTopBar.jsx';
 import MobileBottomSheet from './MobileBottomSheet.jsx';
@@ -11,10 +11,12 @@ export default function MobileShell({ isDark, onToggleTheme, onOpenWork }) {
   const [activePage, setActivePage] = useState('about');
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handlePageChange = (pageId) => {
+  const handlePageChange = useCallback((pageId) => {
     setActivePage(pageId);
     setMenuOpen(false);
-  };
+  }, []);
+  const openMenu = useCallback(() => setMenuOpen(true), []);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   const isPlayground = activePage === 'playground';
 
@@ -26,7 +28,7 @@ export default function MobileShell({ isDark, onToggleTheme, onOpenWork }) {
       background: 'var(--figma-bg)',
       overflow: 'hidden',
     }}>
-      <MobileTopBar onMenuOpen={() => setMenuOpen(true)} />
+      <MobileTopBar onMenuOpen={openMenu} />
 
       {/* Content area */}
       <div style={{
@@ -55,7 +57,7 @@ export default function MobileShell({ isDark, onToggleTheme, onOpenWork }) {
       {/* Bottom Sheet */}
       <MobileBottomSheet
         isOpen={menuOpen}
-        onClose={() => setMenuOpen(false)}
+        onClose={closeMenu}
         activePage={activePage}
         onPageChange={handlePageChange}
         isDark={isDark}

@@ -1,4 +1,4 @@
-import React, { useRef, memo, useState } from 'react';
+import React, { useRef, memo, useState, useEffect } from 'react';
 import PLAYGROUND_IMAGES, { isVideo } from './playgroundImages.js';
 
 function seededRandom(seed) {
@@ -53,6 +53,37 @@ const DraggableImage = memo(function DraggableImage({ src, x, y, w, rotate, zInd
   const elRef = useRef(null);
   const [lifted, setLifted] = useState(false);
   const posRef = useRef({ x, y });
+  const video = isVideo(src);
+
+  useEffect(() => {
+    if (!video || !elRef.current) return undefined;
+
+    const element = elRef.current;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let visible = false;
+
+    const syncPlayback = () => {
+      if (visible && !reduceMotion.matches) element.play().catch(() => {});
+      else element.pause();
+    };
+
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      syncPlayback();
+    }, {
+      root: element.closest('.canvas-viewport'),
+      rootMargin: '240px',
+    });
+
+    observer.observe(element);
+    reduceMotion.addEventListener('change', syncPlayback);
+
+    return () => {
+      observer.disconnect();
+      reduceMotion.removeEventListener('change', syncPlayback);
+      element.pause();
+    };
+  }, [video]);
 
   const handleMouseDown = (e) => {
     e.stopPropagation();
@@ -61,16 +92,23 @@ const DraggableImage = memo(function DraggableImage({ src, x, y, w, rotate, zInd
     const startMouse = { x: e.clientX, y: e.clientY };
     const startItem = { ...posRef.current };
     const scale = transformRef.current.scale;
+    let lastDx = 0;
+    let lastDy = 0;
+    let frame = null;
 
     const onMove = (ev) => {
       const dx = (ev.clientX - startMouse.x) / scale;
       const dy = (ev.clientY - startMouse.y) / scale;
+      lastDx = dx;
+      lastDy = dy;
       const nx = startItem.x + dx;
       const ny = startItem.y + dy;
       posRef.current = { x: nx, y: ny };
-      if (elRef.current) {
-        elRef.current.style.left = nx + 'px';
-        elRef.current.style.top = ny + 'px';
+      if (frame === null) {
+        frame = requestAnimationFrame(() => {
+          frame = null;
+          if (elRef.current) elRef.current.style.translate = `${lastDx}px ${lastDy}px`;
+        });
       }
     };
 
@@ -78,6 +116,12 @@ const DraggableImage = memo(function DraggableImage({ src, x, y, w, rotate, zInd
       setLifted(false);
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
+      if (frame !== null) cancelAnimationFrame(frame);
+      if (elRef.current) {
+        elRef.current.style.left = `${posRef.current.x}px`;
+        elRef.current.style.top = `${posRef.current.y}px`;
+        elRef.current.style.translate = 'none';
+      }
     };
 
     window.addEventListener('mousemove', onMove);
@@ -97,17 +141,16 @@ const DraggableImage = memo(function DraggableImage({ src, x, y, w, rotate, zInd
       : 'drop-shadow(0 2px 6px rgba(0,0,0,0.06))',
     zIndex: lifted ? 999 : zIndex,
     transition: 'transform 0.2s, filter 0.2s',
-    willChange: 'left, top, transform',
+    willChange: lifted ? 'translate, transform, filter' : 'auto',
     display: 'block',
   };
 
-  if (isVideo(src)) {
+  if (video) {
     return (
       <video
         data-card
         ref={elRef}
         src={src}
-        autoPlay
         loop
         muted
         playsInline

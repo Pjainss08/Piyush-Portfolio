@@ -21,6 +21,7 @@ function applyTheme(isDark) {
     root.style.setProperty('--figma-text-secondary', '#999999');
     root.style.setProperty('--figma-text-tertiary', '#666666');
     root.style.setProperty('--figma-blue-bg', 'rgba(13, 153, 255, 0.15)');
+    root.style.setProperty('--figma-focus', '#58b8ff');
   } else {
     root.style.setProperty('--figma-bg', '#f5f5f5');
     root.style.setProperty('--figma-surface', '#ffffff');
@@ -30,6 +31,7 @@ function applyTheme(isDark) {
     root.style.setProperty('--figma-text-secondary', '#666666');
     root.style.setProperty('--figma-text-tertiary', '#999999');
     root.style.setProperty('--figma-blue-bg', 'rgba(13, 153, 255, 0.1)');
+    root.style.setProperty('--figma-focus', '#0068b8');
   }
 }
 
@@ -40,14 +42,29 @@ export default function App() {
 
   useEffect(() => { applyTheme(isDark); }, [isDark]);
 
+  const toggleTheme = useCallback(() => {
+    const transitionBlocker = document.createElement('style');
+    transitionBlocker.textContent = '*,*::before,*::after{transition:none!important}';
+    document.head.append(transitionBlocker);
+
+    const nextTheme = !isDark;
+    applyTheme(nextTheme);
+    setIsDark(nextTheme);
+    void document.body.offsetHeight;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => transitionBlocker.remove());
+    });
+  }, [isDark]);
+
   const closeModal = useCallback(() => setModalProject(null), []);
 
   return (
     <>
       <Loader />
       {isMobile
-        ? <MobileShell isDark={isDark} onToggleTheme={() => setIsDark(!isDark)} onOpenWork={setModalProject} />
-        : <DesktopApp isDark={isDark} onToggleTheme={() => setIsDark(!isDark)} onOpenWork={setModalProject} />}
+        ? <MobileShell isDark={isDark} onToggleTheme={toggleTheme} onOpenWork={setModalProject} />
+        : <DesktopApp isDark={isDark} onToggleTheme={toggleTheme} onOpenWork={setModalProject} />}
       <WorkModal project={modalProject} onClose={closeModal} onNavigate={setModalProject} />
     </>
   );

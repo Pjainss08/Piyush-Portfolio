@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import PLAYGROUND_IMAGES, { isVideo } from './playgroundImages.js';
 
 function seededRandom(seed) {
@@ -28,6 +28,46 @@ const itemStyle = {
   borderRadius: 6,
 };
 
+function LazyVideo({ src }) {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const element = videoRef.current;
+    if (!element) return undefined;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let visible = false;
+    const syncPlayback = () => {
+      if (visible && !reduceMotion.matches) element.play().catch(() => {});
+      else element.pause();
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      syncPlayback();
+    }, { rootMargin: '200px' });
+
+    observer.observe(element);
+    reduceMotion.addEventListener('change', syncPlayback);
+    return () => {
+      observer.disconnect();
+      reduceMotion.removeEventListener('change', syncPlayback);
+      element.pause();
+    };
+  }, []);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      loop
+      muted
+      playsInline
+      preload="metadata"
+      style={itemStyle}
+    />
+  );
+}
+
 export default function MobilePlayground() {
   return (
     <div
@@ -41,16 +81,7 @@ export default function MobilePlayground() {
       {SHUFFLED_IMAGES.map((src, i) => {
         if (isVideo(src)) {
           return (
-            <video
-              key={i}
-              src={src}
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              style={itemStyle}
-            />
+            <LazyVideo key={i} src={src} />
           );
         }
         return (
@@ -60,6 +91,7 @@ export default function MobilePlayground() {
             alt=""
             draggable={false}
             loading="lazy"
+            decoding="async"
             style={itemStyle}
           />
         );
